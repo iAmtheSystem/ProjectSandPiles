@@ -10,7 +10,7 @@
 using namespace std;
 
 int main() {
-	cout << "S A N D   P I L E S" << endl; !
+	cout << "S A N D   P I L E S" << endl;
 	//this is a change!
 	return 0;
 }
