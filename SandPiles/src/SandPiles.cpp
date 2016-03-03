@@ -10,10 +10,17 @@
 using namespace std;
 
 #include "simpleMath.h"
+#include "SandPile.h"
 
 int main() {
 	cout << "S A N D   P I L E S" << endl;
+	SandPile *pile2d = new SandPile(2,5,100);
 
-	//there was no change!
+	SandPile *pile3d = new SandPile(3,5,100);
+
+	pile2d->printLattice("2d.dat");
+	pile3d->printLattice();
+
+
 	return 0;
 }

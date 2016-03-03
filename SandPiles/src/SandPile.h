@@ -9,6 +9,12 @@
 #define SANDPILE_H_
 
 #include <vector>
+#include <fstream>
+#include <iostream>
+#include <cmath>
+#include <string>
+
+#include "simpleMath.h"
 
 class SandPile {
 private:
@@ -25,6 +31,8 @@ public:
 	const void fillLatticeRand();
 	const void timestep();
 
+	const void printLattice();
+	const void printLattice(const std::string name);
 };
 
 #endif /* SANDPILE_H_ */

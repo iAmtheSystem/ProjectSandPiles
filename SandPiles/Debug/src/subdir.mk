@@ -5,15 +5,18 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../src/SandPile.cpp \
-../src/SandPiles.cpp 
+../src/SandPiles.cpp \
+../src/simpleMath.cpp 
 
 OBJS += \
 ./src/SandPile.o \
-./src/SandPiles.o 
+./src/SandPiles.o \
+./src/simpleMath.o 
 
 CPP_DEPS += \
 ./src/SandPile.d \
-./src/SandPiles.d 
+./src/SandPiles.d \
+./src/simpleMath.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

@@ -11,17 +11,9 @@
 #include <time.h>
 #include <stdlib.h>
 
-bool seeded = false;
+extern bool seeded;
 
-double uniformRand(double from, double to){
-	if(!seeded) {
-		srand (time(NULL));
-		seeded = true;
-	}
-	return (double) rand()/RAND_MAX * (from-to) + to;
-
-}
-
+extern double uniformRand(double from, double to);
 
 
 
