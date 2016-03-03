@@ -17,7 +17,7 @@ using namespace std;
 int main() {
 	const int nrOfTimesteps = 1000;
 	cout << "S A N D   P I L E S" << endl;
-	SandPile *pile2d = new SandPile(2,20,5);
+	SandPile *pile2d = new SandPile(2,100,4);
 
 
 	stringstream name;
@@ -26,7 +26,9 @@ int main() {
 		name.str("");
 		name << i;
 		filename = "./data/step"+name.str()+".dat";
-		pile2d->timestep();
+		for(int j=0;j<1;j++){
+			pile2d->timestep();
+		}
 		pile2d->printLattice(filename);
 	}
 

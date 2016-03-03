@@ -23,7 +23,7 @@ SandPile::~SandPile() {
 
 const void SandPile::fillLatticeRand() {
 	for(int i=0;i<pow(sidelength,dimension);i++){
-		lattice[i] = uniformRand(0,zk-1); // zk >= 1
+		lattice[i] = uniformRand(0,zk); // zk >= 1
 	}
 }
 
@@ -93,15 +93,15 @@ std::vector<int> SandPile::relax(std::vector<int> &lat) {
 
 std::vector<int> SandPile::addSand(std::vector<int> & lat) {
 
-	return addSand(lat,0.1);
+	return addSand(lat,0.001);
 }
 
 std::vector<int> SandPile::addSand(std::vector<int>& lat, double probability) {
-//	for(int i=0;i<nrOfElements;i++){
-//		if(uniformRand(0,1)<probability) lat[i]++;
-//	}
+	for(int i=0;i<nrOfElements;i++){
+		if(uniformRand(0,1)<probability) lat[i]++;
+	}
 	// add just one grain by one
-	lat[uniformRand(0,nrOfElements)]++;
+	// lat[uniformRand(0,nrOfElements)]++;
 	return lat;
 }
 
