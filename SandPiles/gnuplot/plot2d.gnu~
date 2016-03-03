@@ -1,0 +1,16 @@
+#set style data lines
+unset contour
+set contour base
+set xrange[0:2]
+set yrange[0:2]
+set zrange[0:101]
+#unset dgrid3d
+#set dgrid3d 100,100,5
+#show contour
+set tic scale 0
+set view map
+set terminal png
+set output "after.png"
+splot "../2d_after.dat" matrix
+set output "befor.png"
+splot "../2d_before.dat"

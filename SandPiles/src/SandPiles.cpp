@@ -7,19 +7,29 @@
 //============================================================================
 
 #include <iostream>
+#include <string>
+#include <sstream>
 using namespace std;
 
 #include "simpleMath.h"
 #include "SandPile.h"
 
 int main() {
+	const int nrOfTimesteps = 1000;
 	cout << "S A N D   P I L E S" << endl;
-	SandPile *pile2d = new SandPile(2,5,100);
+	SandPile *pile2d = new SandPile(2,20,5);
 
-	SandPile *pile3d = new SandPile(3,5,100);
 
-	pile2d->printLattice("2d.dat");
-	pile3d->printLattice();
+	stringstream name;
+	string filename;
+	for(int i=0;i<nrOfTimesteps;i++){
+		name.str("");
+		name << i;
+		filename = "./data/step"+name.str()+".dat";
+		pile2d->timestep();
+		pile2d->printLattice(filename);
+	}
+
 
 
 	return 0;

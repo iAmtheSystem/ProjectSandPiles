@@ -21,6 +21,7 @@ private:
 	std::vector<int> lattice;
 	const int dimension;
 	const int sidelength;
+	const int nrOfElements;
 	const int zk;
 
 public:
@@ -29,10 +30,17 @@ public:
 	virtual ~SandPile();
 
 	const void fillLatticeRand();
+	const void setPoint(int point, int value);
+
 	const void timestep();
+	std::vector<int> relax(std::vector<int> &lat);
+	std::vector<int> addSand(std::vector<int> & lat);
+	std::vector<int> addSand(std::vector<int> & lat,double probability);
+
 
 	const void printLattice();
 	const void printLattice(const std::string name);
+	const void coutLattice2d();
 };
 
 #endif /* SANDPILE_H_ */
