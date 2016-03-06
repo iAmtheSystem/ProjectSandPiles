@@ -17,6 +17,7 @@ SandPile::SandPile(int dimension, int sidelength):
 	lattice = std::vector<int> (nrOfElements);
 	// std::cout << "Initializing... ";
 	fillLatticeRand(zk,zk*100);
+	// relax(lattice);
 	// std::cout <<"... end" << std::endl;
 }
 

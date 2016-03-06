@@ -46,6 +46,9 @@ int main() {
 		// cout << "\t"<<  point+pow(sidelength,i) << endl;
 		cout << endl;
 	}
+	pile2d->timestep();
+	pile2d->coutLattice2d();
+
 	cout << "DEBUG2" << endl;
 //	for(int i=0;i<nrOfTimesteps;i++){
 //		// cout << "Timestep " << i << endl;

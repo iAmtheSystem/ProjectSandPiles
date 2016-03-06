@@ -48,6 +48,9 @@ public:
 
 	const void defineClusters();
 
+	const std::vector<int>& getLattice() const {
+		return lattice;
+	}
 };
 
 #endif /* SANDPILE_H_ */
