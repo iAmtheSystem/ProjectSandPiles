@@ -19,7 +19,7 @@ int main() {
 	int dimension = 2;
 	int sidelength = 5;
 
-	cout << "S A N D   P I L E S !" << endl;
+	cout << "S A N D   P I L E S ." << endl;
 
 
 	SandPile *pile2d = new SandPile(dimension,sidelength);
