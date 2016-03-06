@@ -9,6 +9,7 @@
 
 SandPile::SandPile():
 	dimension(0),sidelength(0),nrOfElements(0),zk(0) {
+	std::cout << "INIT" << std::endl;
 }
 
 SandPile::SandPile(int dimension, int sidelength):
