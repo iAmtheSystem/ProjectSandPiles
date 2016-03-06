@@ -26,11 +26,12 @@ private:
 
 public:
 	SandPile();
-	SandPile(int dimension,int sidelength,int zk);
+	SandPile(int dimension,int sidelength);
 	virtual ~SandPile();
 
-	const void fillLatticeRand();
+	const void fillLatticeRand(const int from, const int to);
 	const void setPoint(int point, int value);
+	void neighbours(int point, int** neighbour);
 
 	const void timestep();
 	std::vector<int> relax(std::vector<int> &lat);
@@ -40,7 +41,13 @@ public:
 
 	const void printLattice();
 	const void printLattice(const std::string name);
+	const void fprintLattice(const std::string name, std::vector<int> &lat);
+
 	const void coutLattice2d();
+
+
+	const void defineClusters();
+
 };
 
 #endif /* SANDPILE_H_ */

@@ -11,19 +11,21 @@ SandPile::SandPile():
 	dimension(0),sidelength(0),nrOfElements(0),zk(0) {
 }
 
-SandPile::SandPile(int dimension, int sidelength, int zk = 100):
-		dimension(dimension),sidelength(sidelength),nrOfElements(pow(sidelength,dimension)),zk(zk) {
+SandPile::SandPile(int dimension, int sidelength):
+		dimension(dimension),sidelength(sidelength),nrOfElements(pow(sidelength,dimension)),zk(2*dimension) {
 	lattice = std::vector<int> (nrOfElements);
-	fillLatticeRand();
+	// std::cout << "Initializing... ";
+	fillLatticeRand(zk,zk*100);
+	// std::cout <<"... end" << std::endl;
 }
 
 SandPile::~SandPile() {
 	// TODO Auto-generated destructor stub
 }
 
-const void SandPile::fillLatticeRand() {
+const void SandPile::fillLatticeRand(const int from, const int to) {
 	for(int i=0;i<pow(sidelength,dimension);i++){
-		lattice[i] = uniformRand(0,zk); // zk >= 1
+		lattice[i] = uniformRand(from,to);
 	}
 }
 
@@ -107,6 +109,23 @@ std::vector<int> SandPile::addSand(std::vector<int>& lat, double probability) {
 
 
 const void SandPile::printLattice(const std::string name) {
+
+	fprintLattice(name,lattice);
+	// std::cout << " ...Finished Print" << std::endl;
+
+}
+
+
+
+const void SandPile::coutLattice2d() {
+	for(int i=0;i<nrOfElements;i++){
+		std::cout << lattice[i] << "\t";
+		if(i%sidelength==sidelength-1) std::cout << std::endl;
+	}
+}
+
+const void SandPile::fprintLattice(const std::string name,std::vector<int> & lat) {
+
 	std::cout << "Printing file for " << dimension <<"-dim lattice in " << name << std::endl;
 
 	std::fstream file;
@@ -125,7 +144,7 @@ const void SandPile::printLattice(const std::string name) {
 			file << koord[d] << "\t";
 			// std::cout << koord[d] << "\t";
 		}
-		file << lattice[i] << std::endl;
+		file << lat[i] << std::endl;
 		// std::cout << lattice[i] << std::endl;
 		koord[0] ++;
 		for(int d=0;d<dimension;d++){
@@ -138,15 +157,52 @@ const void SandPile::printLattice(const std::string name) {
 
 
 	file.close();
-	// std::cout << " ...Finished Print" << std::endl;
 
 }
 
 
+void SandPile::neighbours(int point,int** neighbour){
 
-const void SandPile::coutLattice2d() {
-	for(int i=0;i<nrOfElements;i++){
-		std::cout << lattice[i] << "\t";
-		if(i%sidelength==sidelength-1) std::cout << std::endl;
+	// TODO make it without koord
+	int koord[dimension];
+
+	for(int i=0;i<dimension;i++){
+		koord[i] = 0;
 	}
+
+
+	for(int i=0;i<point;i++){
+
+		// std::cout << lattice[i] << std::endl;
+		koord[0] ++;
+		for(int d=0;d<dimension;d++){
+			if(koord[d]>=sidelength){
+				koord[d+1]++;
+				koord[d] = 0;
+			}
+		}
+	}
+
+
+
+	for(int d=0;d<dimension;d++){
+		int p1 = (int) (point+pow(sidelength,d));
+		int p2 = (int) (point-pow(sidelength,d));
+		if(!(koord[d] == sidelength-1)){
+			neighbour[d*2]   = &lattice[p1];
+		}
+		else neighbour[d*2] = NULL;
+
+		if(!(koord[d] == 0)){
+			neighbour[d*2+1] = &lattice[p2];
+		}
+		else neighbour[d*2+1] = NULL;
+	}
+
+}
+
+
+const void SandPile::defineClusters() {
+	std::vector<int> clusters(nrOfElements);
+	// TODO
 }
