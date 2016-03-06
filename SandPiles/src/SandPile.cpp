@@ -199,6 +199,26 @@ void SandPile::neighbours(int point,int** neighbour){
 		else neighbour[d*2+1] = NULL;
 	}
 
+
+	// How to access:
+//	int* neighbour[2*dimension];
+//	int point = 5;
+//	pile2d->neighbours(point,neighbour);
+//	cout << "looking at point " << point << endl;
+//	int toPrint;
+//	for(int i=0;i<dimension*2;i++){
+//		if(!(neighbour[i]==NULL)){
+//		toPrint = *(neighbour[i]);
+//		cout << toPrint;
+//		}
+//		else cout << "NAN";
+//		// cout << "\t"<<  point+pow(sidelength,i) << endl;
+//		cout << endl;
+//	}
+
+
+
+
 }
 
 
