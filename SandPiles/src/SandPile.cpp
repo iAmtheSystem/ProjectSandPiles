@@ -163,7 +163,7 @@ const void SandPile::fprintLattice(const std::string name,std::vector<int> & lat
 }
 
 
-void SandPile::neighbours(int point,int** neighbour){
+void SandPile::neighbours(int point,int** neighbour,std::vector<int> & lat){
 
 	// TODO make it without koord
 	int koord[dimension];
@@ -191,12 +191,12 @@ void SandPile::neighbours(int point,int** neighbour){
 		int p1 = (int) (point+pow(sidelength,d));
 		int p2 = (int) (point-pow(sidelength,d));
 		if(!(koord[d] == sidelength-1)){
-			neighbour[d*2]   = &lattice[p1];
+			neighbour[d*2]   = &lat[p1];
 		}
 		else neighbour[d*2] = NULL;
 
 		if(!(koord[d] == 0)){
-			neighbour[d*2+1] = &lattice[p2];
+			neighbour[d*2+1] = &lat[p2];
 		}
 		else neighbour[d*2+1] = NULL;
 	}
@@ -224,7 +224,10 @@ void SandPile::neighbours(int point,int** neighbour){
 }
 
 
-const void SandPile::defineClusters() {
-	std::vector<int> clusters(nrOfElements);
+const std::vector<int> SandPile::defineClusters() {
+	std::vector<int> critical(nrOfElements);
+	std::vector<int> allCritical(nrOfElements);
+
+	return allCritical;
 	// TODO
 }

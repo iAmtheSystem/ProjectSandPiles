@@ -34,7 +34,8 @@ int main() {
 
 	int* neighbour[2*dimension];
 	int point = 5;
-	pile2d->neighbours(point,neighbour);
+	vector<int> copy = pile2d->getLattice();
+	pile2d->neighbours(point,neighbour,copy);
 	cout << "looking at point " << point << endl;
 	int toPrint;
 	for(int i=0;i<dimension*2;i++){
@@ -49,7 +50,13 @@ int main() {
 	pile2d->timestep();
 	pile2d->coutLattice2d();
 
-	cout << "DEBUG2" << endl;
+	cout << "DEBUG 1" << endl;
+	std::vector<int> test(10);
+	for(int i=0;i<10;i++){
+		cout << "test " << i << " includes " << test[i] << endl;
+	}
+
+	cout << "DEBUG2.a" << endl;
 //	for(int i=0;i<nrOfTimesteps;i++){
 //		// cout << "Timestep " << i << endl;
 //		name.str("");

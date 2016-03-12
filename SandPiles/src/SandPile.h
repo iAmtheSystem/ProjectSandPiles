@@ -31,7 +31,7 @@ public:
 
 	const void fillLatticeRand(const int from, const int to);
 	const void setPoint(int point, int value);
-	void neighbours(int point, int** neighbour);
+	void neighbours(int point, int** neighbour,std::vector<int> & lat);
 
 	const void timestep();
 	std::vector<int> relax(std::vector<int> &lat);
@@ -46,7 +46,7 @@ public:
 	const void coutLattice2d();
 
 
-	const void defineClusters();
+	const std::vector<int> defineClusters();
 
 	const std::vector<int>& getLattice() const {
 		return lattice;
