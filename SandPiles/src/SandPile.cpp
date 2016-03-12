@@ -17,7 +17,7 @@ SandPile::SandPile(int dimension, int sidelength):
 	lattice = std::vector<int> (nrOfElements);
 	// std::cout << "Initializing... ";
 	fillLatticeRand(zk,zk*100);
-	// relax(lattice);
+	relax(lattice);
 	// std::cout <<"... end" << std::endl;
 }
 
@@ -67,7 +67,7 @@ std::vector<int> SandPile::relax(std::vector<int> &lat) {
 		for(int i=0;i<nrOfElements;i++){
 
 
-			if(lat[i]>=zk){
+			if(lat[i]>zk){
 				relaxed = false;
 				nextTimeStepLattice[i]-= 2*dimension;
 
@@ -120,11 +120,16 @@ const void SandPile::printLattice(const std::string name) {
 
 
 const void SandPile::coutLattice2d() {
+	coutLattice2d(lattice);
+}
+const void SandPile::coutLattice2d(std::vector<int> lat) {
 	for(int i=0;i<nrOfElements;i++){
-		std::cout << lattice[i] << "\t";
+		std::cout << lat[i] << "\t";
 		if(i%sidelength==sidelength-1) std::cout << std::endl;
 	}
 }
+
+
 
 const void SandPile::fprintLattice(const std::string name,std::vector<int> & lat) {
 
@@ -219,15 +224,125 @@ void SandPile::neighbours(int point,int** neighbour,std::vector<int> & lat){
 //	}
 
 
+}
+
+void SandPile::neighboursNumbers(int point,int neighbourNumbers[]){
+
+	int koord[dimension];
+
+	for(int i=0;i<dimension;i++){
+		koord[i] = 0;
+	}
+
+
+	for(int i=0;i<point;i++){
+
+		koord[0] ++;
+		for(int d=0;d<dimension;d++){
+			if(koord[d]>=sidelength){
+				koord[d+1]++;
+				koord[d] = 0;
+			}
+		}
+	}
+
+
+	for(int d=0;d<dimension;d++){
+		int p1 = (int) (point+pow(sidelength,d));
+		int p2 = (int) (point-pow(sidelength,d));
+		if(!(koord[d] == sidelength-1)){
+			neighbourNumbers[d*2]   = p1;
+		}
+		else neighbourNumbers[d*2] = -1;
+
+		if(!(koord[d] == 0)){
+			neighbourNumbers[d*2+1] = p2;
+		}
+		else neighbourNumbers[d*2+1] = -1;
+	}
 
 
 }
 
 
-const std::vector<int> SandPile::defineClusters() {
-	std::vector<int> critical(nrOfElements);
-	std::vector<int> allCritical(nrOfElements);
+void SandPile::setNeighbours(int point,std::vector<int> & lat,int value){
+	int* neighbour[2*dimension];
+	neighbours(point,neighbour,lat);
 
-	return allCritical;
-	// TODO
+	for(int i=0;i<dimension*2;i++){
+		if(!(neighbour[i]==NULL)){
+			// std::cout <<  "set neighbour to " << value << std::endl;
+			*(neighbour[i]) = value;
+		}
+	}
+}
+
+void SandPile::increaseNeighbours(int point,std::vector<int> & lat){
+	int* neighbour[2*dimension];
+	neighbours(point,neighbour,lat);
+
+	for(int i=0;i<dimension*2;i++){
+		if(!(neighbour[i]==NULL)){
+			// std::cout <<  "set neighbour to " << value << std::endl;
+			*(neighbour[i]) = *(neighbour[i]) + 1;
+		}
+	}
+}
+
+
+void SandPile::testCritical(int point,std::vector<int> &lat,std::vector<int> &critical,std::vector<int> &allCritical){
+	if(lat[point]>zk){
+
+		lat[point]-=2*dimension;
+		increaseNeighbours(point,lat);
+
+		//std::cout << "Critical: " << std::endl;
+		//coutLattice2d(lat);
+
+		critical[point] = 1;
+		setNeighbours(point,critical,1);
+		allCritical[point] = 1;
+		setNeighbours(point,allCritical,1);
+
+		int neighbourNr[2*dimension];
+		neighboursNumbers(point,neighbourNr);
+
+		for(int i=0;i<2*dimension;i++){
+			if(neighbourNr[i]>=0){
+				testCritical(neighbourNr[i],lat,critical,allCritical);
+			}
+		}
+
+	}
+}
+
+
+const void SandPile::defineClusters() {
+	std::vector<int> copiedLattice;
+	std::vector<int> allCritical(nrOfElements);
+	int clustersize;
+
+	std::stringstream name;
+	std::string filename;
+
+	for(int i=0;i<nrOfElements;i++){
+		std::vector<int> critical(nrOfElements);
+		copiedLattice = lattice;
+		copiedLattice[i]++;
+        // coutLattice2d(copiedLattice);
+		testCritical(i,copiedLattice,critical,allCritical);
+
+		clustersize = 0;
+		for(int j=0;j<nrOfElements;j++){
+			clustersize += critical[i];
+		}
+		name.str("");
+		name << i;
+		filename = "./data/cluster"+name.str()+".dat";
+		fprintLattice(filename,critical);
+	}// End all Elements
+
+	fprintLattice("data/AllCritical.dat",allCritical);
+	std::cout << "Critical Lattice:" << std::endl;
+	coutLattice2d(allCritical);
 }
