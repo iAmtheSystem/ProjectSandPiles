@@ -18,7 +18,7 @@ using namespace std;
 int main() {
 	// const int nrOfTimesteps = 1000;
 	int dimension = 2;
-	int sidelength = 20;
+	int sidelength = 100;
 
 	cout << "S A N D   P I L E S ." << endl;
 

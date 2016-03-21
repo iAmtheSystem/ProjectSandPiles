@@ -23,13 +23,17 @@ const void Distribution::calculateDistribution(int nrOfIterations) {
 		// std::cout << i << "\t";
 		SandPile *pile = new SandPile(dimension,sidelength);
 
-		std::cout << "Iteration " << i << std::endl;
+		std::cout << "data point " << i << std::endl;
 
 		// Thermalizing
 		for(int j=0;j<nrOfElements;j++){
 			pile->timestep();
 		}
 		int randomLatticeSite = uniformRand(0,nrOfElements);
+		if(pile->getPoint(randomLatticeSite)<2*dimension){
+			i--;
+			continue;
+		}
 		int size = pile->clusterSize(randomLatticeSite);
 
 

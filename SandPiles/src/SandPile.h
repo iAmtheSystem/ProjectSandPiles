@@ -58,6 +58,10 @@ public:
 	const void defineClusters();
 	const int clusterSize(int point);
 
+	const int getPoint(const int point) const {
+		return lattice[point];
+	}
+
 	const std::vector<int>& getLattice() const {
 		return lattice;
 	}
