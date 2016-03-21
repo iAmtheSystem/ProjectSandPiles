@@ -43,6 +43,7 @@ public:
 	std::vector<int> addSand(std::vector<int> & lat);
 	std::vector<int> addSand(std::vector<int> & lat,double probability);
 
+	int* clustersizeDistribution();
 
 	const void printLattice();
 	const void printLattice(const std::string name);
@@ -51,9 +52,11 @@ public:
 	const void coutLattice2d();
 	const void coutLattice2d(std::vector<int> lat);
 
-
+	const double averageSlope(double& variance);
+	void testCritical(int point,std::vector<int> &lat,std::vector<int> &critical);
 	void testCritical(int point,std::vector<int> &lat,std::vector<int> &critical,std::vector<int> &allCritical);
 	const void defineClusters();
+	const int clusterSize(int point);
 
 	const std::vector<int>& getLattice() const {
 		return lattice;

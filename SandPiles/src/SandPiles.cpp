@@ -13,11 +13,12 @@ using namespace std;
 
 #include "simpleMath.h"
 #include "SandPile.h"
+#include "Distribution.h"
 
 int main() {
 	// const int nrOfTimesteps = 1000;
 	int dimension = 2;
-	int sidelength = 5;
+	int sidelength = 20;
 
 	cout << "S A N D   P I L E S ." << endl;
 
@@ -82,10 +83,23 @@ int main() {
 ////		pile2d->printLattice(filename);
 ////	}
 
-	pile2d->coutLattice2d();
-	pile2d->printLattice("./data/Lattice.dat");
-	cout << "Define Clusters" << endl;
-	pile2d->defineClusters();
+//	pile2d->coutLattice2d();
+//	double variance = 0;
+//	cout << "Average = " << pile2d->averageSlope(variance);
+//	cout << " Variance = " << variance << endl;
+//
+//
+//	pile2d->printLattice("./data/Lattice.dat");
+//	cout << "Define Clusters" << endl;
+//	pile2d->defineClusters();
+
+
+	Distribution *sizeDistribution = new Distribution(dimension,sidelength);
+
+	cout << "Calculating Distribution" << endl;
+	sizeDistribution->calculateDistribution(10000);
+	cout << "\t... calculated -> continue with printing" << endl;
+	sizeDistribution->fprintData();
 
 
 	cout << "Programm finished!" << endl;

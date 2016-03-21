@@ -14,11 +14,10 @@ SandPile::SandPile():
 
 SandPile::SandPile(int dimension, int sidelength):
 		dimension(dimension),sidelength(sidelength),nrOfElements(pow(sidelength,dimension)),zk(2*dimension) {
-	lattice = std::vector<int> (nrOfElements);
-	// std::cout << "Initializing... ";
-	fillLatticeRand(zk,zk*100);
+	// lattice = std::vector<int> (nrOfElements);
+	lattice.resize(nrOfElements);
+	fillLatticeRand(zk,zk*2);
 	relax(lattice);
-	// std::cout <<"... end" << std::endl;
 }
 
 SandPile::~SandPile() {
@@ -317,6 +316,58 @@ void SandPile::testCritical(int point,std::vector<int> &lat,std::vector<int> &cr
 }
 
 
+void SandPile::testCritical(int point,std::vector<int> &lat,std::vector<int> &critical){
+	if(lat[point]>zk){
+
+		lat[point]-=2*dimension;
+		increaseNeighbours(point,lat);
+
+
+		critical[point] = 1;
+		// setNeighbours(point,critical,1);
+
+		int neighbourNr[2*dimension];
+		neighboursNumbers(point,neighbourNr);
+
+		for(int i=0;i<2*dimension;i++){
+			if(neighbourNr[i]>=0){
+				testCritical(neighbourNr[i],lat,critical);
+			}
+		}
+
+	}
+}
+
+
+
+const double SandPile::averageSlope(double& variance) {
+
+	double mean = 0;
+	double M2 = 0;
+	double delta = 0;
+	double x; // "Messwert..." 0 oder 1#
+	double sampleVariance;
+	double VarianceXbar = 0;
+
+
+	for(int i=0;i<nrOfElements;i++){
+		x = lattice[i];
+		// calculating moving average + variance
+		delta = x - mean;
+		mean += (double) delta/(i+1);
+		M2 += delta*(x-mean);
+
+		sampleVariance = (double) M2/i;
+
+		VarianceXbar = sampleVariance/i; // see script chapter 2 page 12.
+
+	}
+
+	variance = VarianceXbar;
+	return mean;
+}
+
+
 const void SandPile::defineClusters() {
 	std::vector<int> copiedLattice;
 	std::vector<int> allCritical(nrOfElements);
@@ -346,3 +397,21 @@ const void SandPile::defineClusters() {
 	std::cout << "Critical Lattice:" << std::endl;
 	coutLattice2d(allCritical);
 }
+
+const int SandPile::clusterSize(int point) {
+	std::vector<int> copiedLattice = lattice;
+	int clustersize = 0;
+	std::vector<int> critical(nrOfElements);
+
+	copiedLattice[point]++;
+
+	testCritical(point,copiedLattice,critical);
+	for(int j=0;j<nrOfElements;j++){
+		clustersize += critical[j];
+	}
+
+
+	return clustersize;
+}
+
+
