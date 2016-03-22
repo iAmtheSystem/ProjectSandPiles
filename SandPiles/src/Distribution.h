@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <fstream>
+#include <string>
 #include "SandPile.h"
 #include "simpleMath.h"
 
@@ -19,14 +20,17 @@ private:
 	const int dimension;
 	const int sidelength;
 	const int nrOfElements;
-	std::vector<int> data; // ??
+	std::vector<int> data;
 public:
 	Distribution(int dimension, int sidelength);
 	virtual ~Distribution();
 
 	const void calculateDistribution(int nrOfIterations);
+	const void averageDistribution(int nrOfIterations, int nrOfDistributions);
 
 	const void fprintData();
+	const void fprintData(const std::string name);
+
 
 };
 

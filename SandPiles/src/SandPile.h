@@ -28,6 +28,7 @@ private:
 public:
 	SandPile();
 	SandPile(int dimension,int sidelength);
+	SandPile(int dimension,int sidelength,  bool initialize);
 	virtual ~SandPile();
 
 	const void fillLatticeRand(const int from, const int to);
@@ -39,7 +40,10 @@ public:
 
 
 	const void timestep();
+	const void timestep(bool midpoint);
 	std::vector<int> relax(std::vector<int> &lat);
+	void addSand(int point);
+	void addSandRandom();
 	std::vector<int> addSand(std::vector<int> & lat);
 	std::vector<int> addSand(std::vector<int> & lat,double probability);
 

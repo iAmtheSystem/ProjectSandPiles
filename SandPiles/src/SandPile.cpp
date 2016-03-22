@@ -13,10 +13,19 @@ SandPile::SandPile():
 }
 
 SandPile::SandPile(int dimension, int sidelength):
-		dimension(dimension),sidelength(sidelength),nrOfElements(pow(sidelength,dimension)),zk(2*dimension) {
+		dimension(dimension),sidelength(sidelength),nrOfElements(pow(sidelength,dimension)),zk(2*dimension+1) {
 	// lattice = std::vector<int> (nrOfElements);
 	lattice.resize(nrOfElements);
 	fillLatticeRand(zk,zk*2);
+	relax(lattice);
+}
+
+
+SandPile::SandPile(int dimension, int sidelength, bool initialize):
+		dimension(dimension),sidelength(sidelength),nrOfElements(pow(sidelength,dimension)),zk(2*dimension) {
+	// lattice = std::vector<int> (nrOfElements);
+	lattice.resize(nrOfElements);
+	if(initialize) fillLatticeRand(zk,zk*2);
 	relax(lattice);
 }
 
@@ -31,13 +40,18 @@ const void SandPile::fillLatticeRand(const int from, const int to) {
 }
 
 const void SandPile::timestep() {
-	//std::cout << "\trelax" << std::endl;
-	// relax configuration simultaneously
+	timestep(false);
+}
+
+const void SandPile::timestep(bool midpoint) {
 	lattice = relax(lattice);
 	// 1. add random sand
 	// TODO
 	// std::cout << "\taddSand" << std::endl;
-	lattice=addSand(lattice);
+	if(midpoint){
+		addSand(nrOfElements/2+sidelength/2);
+	}
+	else lattice=addSand(lattice);
 }
 
 const void SandPile::printLattice() {
@@ -93,6 +107,8 @@ std::vector<int> SandPile::relax(std::vector<int> &lat) {
 	}while(!relaxed);
 	return nextTimeStepLattice;
 }
+
+
 
 std::vector<int> SandPile::addSand(std::vector<int> & lat) {
 
@@ -397,6 +413,16 @@ const void SandPile::defineClusters() {
 	std::cout << "Critical Lattice:" << std::endl;
 	coutLattice2d(allCritical);
 }
+
+void SandPile::addSand(int point) {
+	lattice[point]++;
+}
+
+void SandPile::addSandRandom() {
+	lattice[uniformRand(0,nrOfElements)]++;
+}
+
+
 
 const int SandPile::clusterSize(int point) {
 	std::vector<int> copiedLattice = lattice;
