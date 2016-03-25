@@ -41,6 +41,7 @@ public:
 
 	const void timestep();
 	const void timestep(bool midpoint);
+	const void relax();
 	std::vector<int> relax(std::vector<int> &lat);
 	void addSand(int point);
 	void addSandRandom();
@@ -72,6 +73,10 @@ public:
 
 	void setLattice(const std::vector<int>& lattice) {
 		this->lattice = lattice;
+	}
+
+	const int getZk() const {
+		return zk;
 	}
 };
 
