@@ -140,9 +140,13 @@ const void SandPile::coutLattice2d() {
 	coutLattice2d(lattice);
 }
 const void SandPile::coutLattice2d(std::vector<int> lat) {
-	for(int i=0;i<nrOfElements;i++){
+	coutLattice2d(lat,sidelength);
+}
+
+const void SandPile::coutLattice2d(std::vector<int> lat,int sideL) {
+	for(int i=0;i<pow(sideL,2);i++){
 		std::cout << lat[i] << "\t";
-		if(i%sidelength==sidelength-1) std::cout << std::endl;
+		if(i%sideL==sideL-1) std::cout << std::endl;
 	}
 }
 
@@ -428,6 +432,15 @@ const void SandPile::relax() {
 	relax(lattice);
 }
 
+std::vector<int> SandPile::defineCluster(int point) {
+	std::vector<int> copiedLattice = lattice;
+	std::vector<int> critical(nrOfElements);
+	copiedLattice[point]++;
+
+	testCritical(point,copiedLattice,critical);
+	return critical;
+}
+
 const int SandPile::clusterSize(int point) {
 	std::vector<int> copiedLattice = lattice;
 	int clustersize = 0;
@@ -444,4 +457,154 @@ const int SandPile::clusterSize(int point) {
 	return clustersize;
 }
 
+void SandPile::clusterEdge(std::vector<int> critical,int startpoint) {
+	// selecting first point
+//	int startpoint = -1;
+//	for(int i=0;i<nrOfElements;i++){
+//		if(critical[i]==1) {
+//			startpoint = i ;
+//			break;
+//		}
+//	}
 
+	std::stringstream name;
+	std::string filename;
+
+	name.str("");
+	name << startpoint;
+	filename = "./data/clusteredge"+name.str()+".dat";
+
+	std::fstream file;
+	file.open(filename.c_str(),std::ios::out);
+	file << "# Edge of the Cluster\n";
+
+	int point=startpoint;
+	int vorne = 1;
+	int vornelinks = -1;
+	int dir = 2;
+	double x;
+	double y;
+	double startx=0;
+	double starty=0;
+	bool ersteRunde = true;
+	// bool letzteRunde = false;
+	int i = 300;
+	do{
+		pointTwoD* p = new pointTwoD(point,sidelength);
+		if(dir==5) dir=1;
+		if(dir==0) dir=4;
+		switch (dir){
+			case 1:
+				if(p->isValid(p->getX()+1,p->getY())) vorne = point +1;
+				else vorne = -1;
+				if(p->isValid(p->getX()+1,p->getY()-1)) vornelinks = point-sidelength+1;
+				else vornelinks = -1;
+				break;
+			case 2:
+				if(p->isValid(p->getX(),p->getY()+1) ) vorne = point + sidelength;
+				else vorne = -1;
+				if(p->isValid(p->getX()+1,p->getY()+1) ) vornelinks = point + sidelength +1;
+				else vornelinks = -1;
+				break;
+			case 3:
+				if(p->isValid(p->getX()-1,p->getY())) vorne = point - 1;
+				else vorne = -1;
+				if(p->isValid(p->getX()-1,p->getY()+1) ) vornelinks = point + sidelength -1;
+				else vornelinks = -1;
+				break;
+			case 4:
+				if(p->isValid(p->getX(),p->getY()-1) ) vorne = point - sidelength;
+				else vorne = -1;
+				if(p->isValid(p->getX()-1,p->getY()-1) ) vornelinks = point -1 - sidelength;
+				else vornelinks = -1;
+				break;
+		}
+
+		// std::cout << "valid? "<< p->isValid(2,0)<< std::endl;
+
+		std::cout << "X = " << p->getX() << "\tY = " << p->getY() << "\t" << "Vorne: " << vorne << "\t";
+				if(vorne == -1) std::cout << "X";
+				else std::cout << critical[vorne];
+				std::cout << "\tVornelinks: "<< vornelinks << "\t";
+				if(vornelinks == -1) std::cout << "X";
+				else std::cout << critical[vornelinks];
+				std::cout<< "\t";
+
+		x = p->getX();
+		if(dir == 1 || dir == 2) x+=0.5;
+		else if(dir == 3 || dir == 4) x-=0.5;
+		y = p->getY();
+		if(dir == 1 || dir == 4) y-=0.5;
+		else if(dir == 2 || dir == 3) y+=0.5;
+
+		if(ersteRunde){
+			startx = x;
+			starty = y;
+			ersteRunde = false;
+		}
+		else{
+			if(startx == x && starty == y){
+				std::cout << "Finished ClusterEdge" << std::endl;
+				break;
+			}
+
+		}
+
+		std::cout << x << "\t"<< y << "\tDir: " << dir;
+		file << x << "\t" << y << "\n";
+
+
+		if((critical[vorne] == 1 && critical[vornelinks] == 1) ) {
+			dir++;
+			std::cout << " weiter nach rechts (dir +1)";
+
+		}
+
+		else if( critical[vornelinks] == 1 && critical[vorne] == 0){
+			point = vorne;
+			std::cout << " weiter gerade aus (dir + 0)";
+		}
+
+		else if(critical[vornelinks] == 0 || (vorne == -1 && vornelinks == -1)){
+			dir--;
+			point = vornelinks;
+			std::cout << " weiter nach links (dir - 1)";
+
+		}
+
+		else std::cout << "no case matched";
+
+		std::cout << std::endl;
+
+		// coutLattice2d(critical);
+
+		free(p);
+		i--;
+		if(i==0) std::cout <<"Schritte abgelaufen" << std::endl;
+	}while(i);
+
+	file << x << "\t" << y << "\n";
+	file.close();
+
+}
+
+bool SandPile::OutOfRange2d(int point) {
+	return (point < 0 || point > nrOfElements);
+}
+
+std::vector<int> SandPile::SideZeros() {
+	return SideZeros(getLattice());
+}
+
+std::vector<int> SandPile::SideZeros(std::vector<int> vector){ // justfortwoD!
+	int new_nrOfElements = pow(sidelength+2,dimension);
+	std::vector<int> vec_new(new_nrOfElements);
+	int j=0;
+	for(int i=0;i<new_nrOfElements;i++){
+		if(i<sidelength+2 || i>new_nrOfElements-sidelength-2) continue;
+		if(i%(sidelength+2)==0 || i%(sidelength+2)== sidelength+1) continue;
+		vec_new[i]=vector[j];
+		j++;
+	}
+	return vec_new;
+}

@@ -96,7 +96,7 @@ const void averageSlope::averageSlopeOfSize() {
 	int sideLengthMax = 50;
 	int nrOfValues = 10;
 
-	for(int size=sideLengthMax;size>1;size--){
+	for(int size=sideLengthMax;size>0;size--){
 		double variance = 0;
 		double median = 0;
 		if(size<20) nrOfValues = 50;
