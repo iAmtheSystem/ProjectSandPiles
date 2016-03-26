@@ -1,0 +1,6 @@
+# sidelength 50
+# dim | avSlope | sqrt(var(avSlope)) | zk 
+1	-nan	0	1
+2	2.0984	0.138679	3
+3	3.10843	0.0654291	5
+4	4.08505	0.0287509	7

@@ -8,8 +8,8 @@
 set dgrid3d
 # set hidden3d
 # set isosample 40
-set xrange[-1:20]
-set yrange[-1:20]
+set xrange[-1:101]
+set yrange[-1:101]
 set zrange[0:5]
 set cbrange [0:6]
 set terminal png
@@ -21,7 +21,7 @@ set terminal x11
 set key below
 # plot sprintf('../data/Lattice.dat') u 1:2:3 w image title sprintf('Lattice.dat');
 
-do for [i=0:40000] {
+do for [i=0:4000] {
 plot sprintf('../data/averageSlope/step%d.dat',i) u 1:2:3 w image title sprintf('Step%d.dat',i);
 pause 0.05
 }

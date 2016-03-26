@@ -15,13 +15,17 @@
 #include <cmath>
 
 #include "SandPile.h"
+#include "simpleMath.h"
 
 class averageSlope {
 public:
 	averageSlope();
 	virtual ~averageSlope();
-	const void determineAverageSlope(int dim) const;
-	const void fillingFromZero(int dim, bool printLattice=false,bool justMidpoint=false) const;
+	double determineAverageSlope(int dim, double &var,bool printConvergence, bool printLattice, bool justMidpoint,bool fromZero);
+	double fillingFromZero(int dim, bool printLattice=false,bool justMidpoint=false);
+	double averageSlopeUsual(int dim,double &var);
+	const void averageSlopeOfdim();
+	const void averageSlopeOfSize();
 };
 
 #endif /* AVERAGESLOPE_H_ */

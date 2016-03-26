@@ -16,13 +16,14 @@
 #include <string>
 
 #include "simpleMath.h"
+#include "pointTwoD.h"
 
 class SandPile {
 private:
 	std::vector<int> lattice;
 	const int dimension;
-	const int sidelength;
-	const int nrOfElements;
+	int sidelength;
+	int nrOfElements;
 	const int zk;
 
 public:
@@ -41,6 +42,7 @@ public:
 
 	const void timestep();
 	const void timestep(bool midpoint);
+	const void relax();
 	std::vector<int> relax(std::vector<int> &lat);
 	void addSand(int point);
 	void addSandRandom();
@@ -55,12 +57,20 @@ public:
 
 	const void coutLattice2d();
 	const void coutLattice2d(std::vector<int> lat);
+	const void coutLattice2d(std::vector<int> lat,int sideL);
+
 
 	const double averageSlope(double& variance);
 	void testCritical(int point,std::vector<int> &lat,std::vector<int> &critical);
 	void testCritical(int point,std::vector<int> &lat,std::vector<int> &critical,std::vector<int> &allCritical);
 	const void defineClusters();
+	std::vector<int> defineCluster(int point);
 	const int clusterSize(int point);
+	void clusterEdge(std::vector<int> critical,int startpoint);
+	bool OutOfRange2d(int point);
+
+	std::vector<int> SideZeros();
+	std::vector<int> SideZeros(std::vector<int> vector);
 
 	const int getPoint(const int point) const {
 		return lattice[point];
@@ -71,7 +81,17 @@ public:
 	}
 
 	void setLattice(const std::vector<int>& lattice) {
+		setLattice(lattice,sidelength);
+	}
+
+	void setLattice(const std::vector<int>& lattice,int new_sidelength) {
 		this->lattice = lattice;
+		this->sidelength = new_sidelength;
+		this->nrOfElements= pow(new_sidelength,dimension);
+	}
+
+	const int getZk() const {
+		return zk;
 	}
 };
 

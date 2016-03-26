@@ -13,18 +13,18 @@ using namespace std;
 
 #include "simpleMath.h"
 #include "SandPile.h"
+
 #include "Distribution.h"
 #include "averageSlope.h"
 
 int main() {
 	// const int nrOfTimesteps = 1000;
 	int dimension = 2;
-	int sidelength = 25;
+	int sidelength = 5;
 
 	cout << "S A N D   P I L E S ." << endl;
 
 
-	SandPile *pile2d = new SandPile(dimension,sidelength);
 
 
 //	stringstream name;
@@ -84,15 +84,15 @@ int main() {
 ////		pile2d->printLattice(filename);
 ////	}
 
-	pile2d->coutLattice2d();
-	double variance = 0;
-	cout << "Average = " << pile2d->averageSlope(variance);
-	cout << " Variance = " << variance << endl;
-
-
-	pile2d->printLattice("./data/Lattice.dat");
-	cout << "Define Clusters" << endl;
-	pile2d->defineClusters();
+//	pile2d->coutLattice2d();
+//	double variance = 0;
+//	cout << "Average = " << pile2d->averageSlope(variance);
+//	cout << " Variance = " << variance << endl;
+//
+//
+//	pile2d->printLattice("./data/Lattice.dat");
+//	cout << "Define Clusters" << endl;
+//	pile2d->defineClusters();
 
 
 //	Distribution *sizeDistribution = new Distribution(dimension,sidelength);
@@ -103,8 +103,52 @@ int main() {
 //	sizeDistribution->fprintData();
 
 //	averageSlope *avSlope = new averageSlope();
-//	avSlope->fillingFromZero(2,true,true);
+//	avSlope->determineAverageSlope(2,false,false,true);
 
+//	double x[] = {5,5,6,6,5};
+//	double variances[] = {1,1,2,1.5,1};
+//	double x_median = 0;
+//	double x_var = 0;
+//
+//	x_median = arithmeticMedianByVariance(5,x,variances,x_var);
+//
+//	cout << "x = " << x_median << " +/- " << x_var << endl;
+
+//	averageSlope *avSlope = new averageSlope();
+//	avSlope->averageSlopeOfSize();
+
+
+//	pile2d->coutLattice2d();
+//	double var = 3;
+//	cout << "Average Slope = "<< pile2d->averageSlope(var) << " +/- " << endl;
+//	cout << var << endl;
+
+	SandPile *pile2d = new SandPile(dimension,sidelength);
+	pile2d->setPoint(7,3);
+	pile2d->setPoint(8,3);
+	pile2d->setPoint(9,3);
+	pile2d->setPoint(4,3);
+	pile2d->setPoint(5,3);
+
+	pile2d->coutLattice2d();
+
+	int new_nrOfElements = pow(sidelength+2,dimension);
+	std::vector<int> vec_new(new_nrOfElements);
+	vec_new = pile2d->SideZeros();
+
+	cout << "New Lattice with side Zeros "<< endl;
+
+
+	pile2d->setLattice(vec_new,sidelength+2);
+	pile2d->coutLattice2d(vec_new);
+	cout << "\n With Cluster \n";
+	vec_new=pile2d->defineCluster(17);
+	pile2d->coutLattice2d( vec_new );
+	pile2d->printLattice("./data/Lattice2.dat");
+	pile2d->fprintLattice("./data/Cluster2.dat",vec_new);
+
+	cout << "Set Edges" << endl;
+	pile2d->clusterEdge( vec_new,11);
 
 	cout << "Programm finished!" << endl;
 	return 0;
