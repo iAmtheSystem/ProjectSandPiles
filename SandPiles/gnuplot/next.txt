@@ -1,0 +1,6 @@
+set terminal png
+set output "another.png"
+set xlabel "x"
+set ylabel "y"
+set pm3d
+splot "sandPile.dat" with pm3d
