@@ -37,6 +37,7 @@ public:
 	void neighbours(int point, int** neighbour,std::vector<int> & lat);
 	void neighboursNumbers(int point,int neighbourNumbers[]);
 	void setNeighbours(int point,std::vector<int> & lat,int value);
+	void increaseNeighbours(int point);
 	void increaseNeighbours(int point,std::vector<int> & lat);
 
 
@@ -60,11 +61,27 @@ public:
 	const void coutLattice2d(std::vector<int> lat,int sideL);
 
 
+	const double averageSlope();
 	const double averageSlope(double& variance);
+
+	const int randomCluster();
+
 	void testCritical(int point,std::vector<int> &lat,std::vector<int> &critical);
+	void testCritical(int point,std::vector<int> &lat,std::vector<int> &critical,int timesteps, int &timestepsMax, int &size);
+	void testDissipation(int point,std::vector<int> &lat,std::vector<int> &critical, int timesteps, int &timestepsMax, int &size, std::vector<int> dissipationRate);
 	void testCritical(int point,std::vector<int> &lat,std::vector<int> &critical,std::vector<int> &allCritical);
+
+
+	void caluclateClusterdata(int point,int &time, int &size, int &radius);
+	void caluclateDissipationdata(int point,std::vector<int> dissipationRate);
+
+
+	void testReached(int point,std::vector<int> &lat,std::vector<int> &critical);
 	const void defineClusters();
 	std::vector<int> defineCluster(int point);
+	std::vector<int> defineCluster(int point, int &time, double &distance);
+
+	std::vector<int> defineReached(int point);
 	const int clusterSize(int point);
 	void clusterEdge(std::vector<int> critical,int startpoint);
 	bool OutOfRange2d(int point);
@@ -92,6 +109,10 @@ public:
 
 	const int getZk() const {
 		return zk;
+	}
+
+	int getNrOfElements() const {
+		return nrOfElements;
 	}
 };
 

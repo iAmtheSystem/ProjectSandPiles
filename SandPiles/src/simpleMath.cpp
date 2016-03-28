@@ -40,3 +40,32 @@ extern double arithmeticMedianByVariance(int array_length, double x[], double va
 
 	return median;
 }
+
+extern void coord(int dim, int sidelength, int point, int koord[]) {
+
+	for(int dimension=0;dimension<dim;dimension++){
+		koord[dimension]=0;
+	}
+
+	for(int i=0;i<point;i++){
+		koord[0] = koord[0] + 1;
+
+		for(int dimension=0;dimension<dim;dimension++){
+			if(koord[dimension]==sidelength){
+
+				koord[dimension] = 0;
+				koord[dimension+1]++;
+			}
+		}
+
+
+	}
+}
+
+extern double radius(int dim, int koord1[], int koord2[]) {
+	int sum = 0;
+	for(int i=0;i<dim;i++){
+		sum += (koord1[i]-koord2[i])*(koord1[i]-koord2[i]);
+	}
+	return sqrt(sum);
+}

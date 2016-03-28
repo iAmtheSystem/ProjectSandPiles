@@ -15,9 +15,13 @@ SandPile::SandPile():
 SandPile::SandPile(int dimension, int sidelength):
 		dimension(dimension),sidelength(sidelength),nrOfElements(pow(sidelength,dimension)),zk(2*dimension-1) {
 	// lattice = std::vector<int> (nrOfElements);
+
 	lattice.resize(nrOfElements);
-	fillLatticeRand(zk,zk*2);
+
+	fillLatticeRand(zk,zk*2*dimension);
+
 	relax(lattice);
+
 }
 
 
@@ -67,41 +71,20 @@ const void SandPile::setPoint(int point, int value) {
 std::vector<int> SandPile::relax(std::vector<int> &lat) {
 	std::vector<int> nextTimeStepLattice (lat);
 
-	// koordinates are just there to make to code better to understand,
-	// could be neglected for higher performance
-	int koord[dimension];
+	// std::cout<< "\tRelax Lattice" << std::endl;
+	int j=0;
 	bool relaxed;
 	do{ // performance optimierbar!!!
 		lat=nextTimeStepLattice;
 		relaxed = true;
-		for(int i=0;i<dimension;i++){
-			koord[i] = 0;
-		}
-
-
+		j++;
 		for(int i=0;i<nrOfElements;i++){
 
 
 			if(lat[i]>zk){
 				relaxed = false;
 				nextTimeStepLattice[i]-= 2*dimension;
-
-
-				for(int d=0;d<dimension;d++){
-					if(koord[d]<sidelength-1){
-						nextTimeStepLattice[i+pow(sidelength,d)]++;
-					}
-					if(koord[d]>0){
-						nextTimeStepLattice[i-pow(sidelength,d)]++;
-					}
-				}
-			}
-			koord[0] ++;
-			for(int d=0;d<dimension;d++){
-				if(koord[d]>=sidelength){
-					koord[d+1]++;
-					koord[d] = 0;
-				}
+				increaseNeighbours(i);
 			}
 
 		}
@@ -298,6 +281,20 @@ void SandPile::setNeighbours(int point,std::vector<int> & lat,int value){
 	}
 }
 
+void SandPile::increaseNeighbours(int point){
+	int* neighbour[2*dimension];
+	neighbours(point,neighbour,lattice);
+
+	for(int i=0;i<dimension*2;i++){
+		if(!(neighbour[i]==NULL)){
+			// std::cout <<  "set neighbour to " << value << std::endl;
+			*(neighbour[i]) = *(neighbour[i]) + 1;
+		}
+	}
+}
+
+
+
 void SandPile::increaseNeighbours(int point,std::vector<int> & lat){
 	int* neighbour[2*dimension];
 	neighbours(point,neighbour,lat);
@@ -338,14 +335,14 @@ void SandPile::testCritical(int point,std::vector<int> &lat,std::vector<int> &cr
 }
 
 
-void SandPile::testCritical(int point,std::vector<int> &lat,std::vector<int> &critical){
+void SandPile::testCritical(int point,std::vector<int> &lat,std::vector<int> &critical, int timesteps, int &timestepsMax, int &size){
 	if(lat[point]>zk){
-
+		timesteps ++;
+		if(timesteps>timestepsMax) timestepsMax = timesteps;
 		lat[point]-=2*dimension;
 		increaseNeighbours(point,lat);
-
-
 		critical[point] = 1;
+		size ++;
 		// setNeighbours(point,critical,1);
 
 		int neighbourNr[2*dimension];
@@ -353,13 +350,69 @@ void SandPile::testCritical(int point,std::vector<int> &lat,std::vector<int> &cr
 
 		for(int i=0;i<2*dimension;i++){
 			if(neighbourNr[i]>=0){
-				testCritical(neighbourNr[i],lat,critical);
+				testCritical(neighbourNr[i],lat,critical,timesteps,timestepsMax,size);
+			}
+		}
+
+	}
+	// std::cout << "testCritical: time:" << timestepsMax << " size " << size << std::endl;
+}
+
+
+void SandPile::testDissipation(int point,std::vector<int> &lat,std::vector<int> &critical, int timesteps, int &timestepsMax, int &size, std::vector<int> dissipationRate){
+	if(lat[point]>zk){
+		timesteps ++;
+		if(timesteps>timestepsMax) timestepsMax = timesteps;
+		dissipationRate[timesteps]++;
+		lat[point]-=2*dimension;
+		increaseNeighbours(point,lat);
+		critical[point] = 1;
+		size ++;
+		// setNeighbours(point,critical,1);
+
+		int neighbourNr[2*dimension];
+		neighboursNumbers(point,neighbourNr);
+
+		for(int i=0;i<2*dimension;i++){
+			if(neighbourNr[i]>=0){
+				testDissipation(neighbourNr[i],lat,critical,timesteps,timestepsMax,size,dissipationRate);
+			}
+		}
+
+	}
+	// std::cout << "testCritical: time:" << timestepsMax << " size " << size << std::endl;
+}
+
+
+
+void SandPile::testReached(int point,std::vector<int> &lat,std::vector<int> &critical){
+	if(lat[point]>zk){
+
+		lat[point]-=2*dimension;
+		increaseNeighbours(point,lat);
+
+
+		critical[point] = 1;
+		setNeighbours(point,critical,1);
+
+		int neighbourNr[2*dimension];
+		neighboursNumbers(point,neighbourNr);
+
+		for(int i=0;i<2*dimension;i++){
+			if(neighbourNr[i]>=0){
+				testReached(neighbourNr[i],lat,critical);
 			}
 		}
 
 	}
 }
 
+
+const double SandPile::averageSlope() {
+	double variance = 0;
+
+	return averageSlope(variance);
+}
 
 
 const double SandPile::averageSlope(double& variance) {
@@ -420,6 +473,8 @@ const void SandPile::defineClusters() {
 	coutLattice2d(allCritical);
 }
 
+
+
 void SandPile::addSand(int point) {
 	lattice[point]++;
 }
@@ -432,12 +487,48 @@ const void SandPile::relax() {
 	relax(lattice);
 }
 
+std::vector <int> SandPile::defineCluster(int point, int& time, double& distance) {
+	std::vector<int> copiedLattice = lattice;
+	std::vector<int> critical(nrOfElements);
+	copiedLattice[point]++;
+
+	int size = 0;
+	testCritical(point,copiedLattice,critical,0,time,size);
+
+	distance = 0;
+	double curDistance = 0;
+
+	int koord1[dimension];
+	int koord2[dimension];
+	coord(dimension,sidelength,point,koord1);
+	for(int i=0;i<nrOfElements;i++){
+		if(critical[i]==1){
+			coord(dimension,sidelength,i,koord2);
+			curDistance = radius(dimension,koord1,koord2);
+			std::cout << "distance = " << distance << " curDistance = " << curDistance << std::endl;
+			if(curDistance >distance) distance = curDistance;
+		}
+	}
+
+	return critical;
+}
+
 std::vector<int> SandPile::defineCluster(int point) {
 	std::vector<int> copiedLattice = lattice;
 	std::vector<int> critical(nrOfElements);
 	copiedLattice[point]++;
 
 	testCritical(point,copiedLattice,critical);
+	return critical;
+}
+
+
+std::vector<int> SandPile::defineReached(int point) {
+	std::vector<int> copiedLattice = lattice;
+	std::vector<int> critical(nrOfElements);
+	copiedLattice[point]++;
+
+	testReached(point,copiedLattice,critical);
 	return critical;
 }
 
@@ -594,6 +685,84 @@ bool SandPile::OutOfRange2d(int point) {
 
 std::vector<int> SandPile::SideZeros() {
 	return SideZeros(getLattice());
+}
+
+void SandPile::testCritical(int point, std::vector<int>& lat,
+		std::vector<int>& critical) {
+	int timestepsMax = 0;
+	int size = 0;
+	testCritical(point,lat,critical,0,timestepsMax, size);
+}
+
+
+void SandPile::caluclateClusterdata(int point,int &time, int &size, int &distance) {
+	std::vector<int> critical(nrOfElements);
+	std::vector<int> lat(getLattice());
+	lat[point] ++;
+	testCritical(point,lat,critical,0,time, size);
+	distance = 0;
+	double curDistance = 0;
+
+	int koord1[dimension];
+	int koord2[dimension];
+	coord(dimension,sidelength,point,koord1);
+	for(int i=0;i<nrOfElements;i++){
+		if(critical[i]==1){
+			coord(dimension,sidelength,i,koord2);
+			curDistance = radius(dimension,koord1,koord2);
+			if(curDistance >distance) distance = curDistance;
+		}
+	}
+//	std::cout   << "\t" << "SandPile:: calculate Clusterdata" << "\t"
+//				<< time << "\t"
+//				<< size << "\t"
+//				<< distance << "\t"
+//				<< "\n";
+
+}
+
+void SandPile::caluclateDissipationdata(int point,std::vector<int> dissipationRate) {
+//int point,std::vector<int> &lat,std::vector<int> &critical, int timesteps, int &timestepsMax, int &size, std::vector<int> dissipationRate
+	std::vector<int> critical(nrOfElements);
+	std::vector<int> lat(getLattice());
+	lat[point] ++;
+	int size = 0;
+	int distance = 0;
+	int timeMax = 0;
+	testDissipation(point,lat,critical,0,timeMax, size,dissipationRate);
+	distance = 0;
+	double curDistance = 0;
+
+//	int koord1[dimension];
+//	int koord2[dimension];
+//	coord(dimension,sidelength,point,koord1);
+//	for(int i=0;i<nrOfElements;i++){
+//		if(critical[i]==1){
+//			coord(dimension,sidelength,i,koord2);
+//			curDistance = radius(dimension,koord1,koord2);
+//			if(curDistance >distance) distance = curDistance;
+//		}
+//	}
+
+//	std::cout   << "\t" << "SandPile:: calculate Clusterdata" << "\t"
+//				<< time << "\t"
+//				<< size << "\t"
+//				<< distance << "\t"
+//				<< "\n";
+
+}
+
+
+const int SandPile::randomCluster() {
+	int clusterpos;
+	bool clusterposFound = false;
+	while(!clusterposFound){
+		clusterpos = uniformRand(0,nrOfElements);
+		if(lattice[clusterpos] == zk ){
+			clusterposFound  = true;
+		}
+	}
+	return clusterpos;
 }
 
 std::vector<int> SandPile::SideZeros(std::vector<int> vector){ // justfortwoD!

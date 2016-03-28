@@ -19,12 +19,14 @@ using namespace std;
 
 int main() {
 	// const int nrOfTimesteps = 1000;
-	int dimension = 2;
-	int sidelength = 5;
+	int dimension = 4;
+	int sidelength = 10;
+	int nrOfElements = pow(sidelength,dimension);
 
 	cout << "S A N D   P I L E S ." << endl;
 
 
+	SandPile *pile2d = new SandPile(dimension,sidelength);
 
 
 //	stringstream name;
@@ -122,33 +124,66 @@ int main() {
 //	double var = 3;
 //	cout << "Average Slope = "<< pile2d->averageSlope(var) << " +/- " << endl;
 //	cout << var << endl;
+//
+//	pile2d->setPoint(7,3);
+//	pile2d->setPoint(8,3);
+//	pile2d->setPoint(9,3);
+//	pile2d->setPoint(4,3);
+//	pile2d->setPoint(5,3);
 
-	SandPile *pile2d = new SandPile(dimension,sidelength);
-	pile2d->setPoint(7,3);
-	pile2d->setPoint(8,3);
-	pile2d->setPoint(9,3);
-	pile2d->setPoint(4,3);
-	pile2d->setPoint(5,3);
+//	pile2d->coutLattice2d();
+//
+//	int new_nrOfElements = pow(sidelength+2,dimension);
+//	std::vector<int> vec_new(new_nrOfElements);
+//	vec_new = pile2d->SideZeros();
+//
+//	cout << "New Lattice with side Zeros "<< endl;
+//
+//	pile2d->setLattice(vec_new,sidelength+2);
+//	pile2d->coutLattice2d(vec_new);
+//	cout << "\n With Cluster \n";
+//	vec_new=pile2d->defineCluster(17);
+//	pile2d->coutLattice2d( vec_new );
+//	pile2d->printLattice("./data/Lattice2.dat");
+//	pile2d->fprintLattice("./data/Cluster2.dat",vec_new);
+//
+//	cout << "Set Edges" << endl;
+//	pile2d->clusterEdge( vec_new,11);
 
-	pile2d->coutLattice2d();
-
-	int new_nrOfElements = pow(sidelength+2,dimension);
-	std::vector<int> vec_new(new_nrOfElements);
-	vec_new = pile2d->SideZeros();
-
-	cout << "New Lattice with side Zeros "<< endl;
+//	averageSlope *avSlope = new averageSlope();
+//	avSlope->averageSlopeOfClusterReachedAndLattice();
 
 
-	pile2d->setLattice(vec_new,sidelength+2);
-	pile2d->coutLattice2d(vec_new);
-	cout << "\n With Cluster \n";
-	vec_new=pile2d->defineCluster(17);
-	pile2d->coutLattice2d( vec_new );
-	pile2d->printLattice("./data/Lattice2.dat");
-	pile2d->fprintLattice("./data/Cluster2.dat",vec_new);
+//	int koord1[2];
+//	int koord2[2];
+//
+//	cout << "getting coordinates" << endl;
+//	coord(2,4,10,koord1);
+//	coord(2,4,0,koord2);
+//
+//	cout << radius(2,koord1,koord2) << endl;
 
-	cout << "Set Edges" << endl;
-	pile2d->clusterEdge( vec_new,11);
+
+//	int time = 0;
+//	double distance = 0;
+//	std::vector<int> vec_new(nrOfElements);
+//	int clusterpos = pile2d->randomCluster();
+//
+//	vec_new=pile2d->defineCluster(clusterpos,time,distance);
+//	cout << "Lattice\n";
+//	pile2d->coutLattice2d();
+//
+//	int koord[2];
+//	coord(dimension,sidelength,clusterpos,koord);
+//	cout << "Pos = " << clusterpos << " Clusterkoords: X = " << koord[0] << "\tY = " << koord[1] << endl;
+//	pile2d->coutLattice2d(vec_new);
+//	cout << "with avalanche time " << time << " and maxDistance " << distance << endl;
+
+
+	cout << "Calculate Distribution" << endl;
+	Distribution* distri = new Distribution(dimension,sidelength,256);
+	distri->calculateDissipationRateDistribution()();
+	distri->fprintADissipation();
 
 	cout << "Programm finished!" << endl;
 	return 0;

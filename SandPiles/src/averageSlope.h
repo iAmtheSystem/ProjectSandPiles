@@ -26,6 +26,15 @@ public:
 	double averageSlopeUsual(int dim,double &var);
 	const void averageSlopeOfdim();
 	const void averageSlopeOfSize();
+	const void averageSlopeOfCluster();
+	const double averageSlopeOfCluster(int point, SandPile *pile);
+	const void averageSlopeOfReached();
+	const double averageSlopeOfReached(int point, SandPile *pile);
+	const void averageSlopeOfClusterReachedAndLattice();
+
+
+
+
 };
 
 #endif /* AVERAGESLOPE_H_ */

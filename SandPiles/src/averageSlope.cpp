@@ -166,3 +166,175 @@ const void averageSlope::averageSlopeOfdim() {
 	file.close();
 
 }
+
+const double averageSlope::averageSlopeOfCluster(int point, SandPile *pile) {
+	int nrOfElements = pile->getNrOfElements();
+	std::vector<int> critical(nrOfElements);
+	critical = pile->defineCluster(point);
+	// pile->coutLattice2d(critical);
+	int clustersize = 0;
+	double average=0;
+	for(int i=0;i<nrOfElements;i++){
+		if(critical[i] == 1){
+			clustersize++;
+			average += pile->getPoint(i);
+		}
+	}
+	return (double)average/clustersize;
+}
+
+const void averageSlope::averageSlopeOfCluster() {
+	int nrOfClusters = 1000;
+	double variance;
+	double mean = 0;
+	double M2 = 0;
+	double delta = 0;
+	double x; // "Messwert..." 0 oder 1#
+	double sampleVariance;
+	double VarianceXbar = 0;
+
+	bool clusterfound;
+
+	std::fstream file;
+	file.open("./data/averageSlope/avSlopeOfCluster.dat",std::ios::out);
+	file << "# ClusterNr | averageSlope | clustersize" << std::endl;
+
+
+
+	for(int i=0;i<nrOfClusters;i++){
+		clusterfound = false;
+		SandPile *pile = new SandPile(2,50);
+		int point;
+		while(!clusterfound){
+			point = uniformRand(0,pile->getNrOfElements());
+			if(pile->getPoint(point)==pile->getZk()) clusterfound = true;
+		}
+		x = averageSlopeOfCluster(point,pile);
+		// calculating moving average + variance
+		delta = x - mean;
+		mean += (double) delta/(i+1);
+		M2 += delta*(x-mean);
+
+		sampleVariance = (double) M2/i;
+
+		VarianceXbar = sampleVariance/i; // see script chapter 2 page 12.
+		int clustersize = pile->clusterSize(point);
+		file << i << "\t" << x << "\t "<< clustersize << "\n";
+		std::cout << i << "\t" << x << "\t "<< clustersize << "\t" << (double)i/nrOfClusters *100 << "%" << std::endl;
+		free(pile);
+	}
+
+	variance = VarianceXbar;
+
+	file << "# Mean =" << mean << "\tVariance = " << variance;
+	file.close();
+	std::cout << "Average Slope of Cluster is " << mean << " +/-" << sqrt(variance) << std::endl;
+}
+
+const double averageSlope::averageSlopeOfReached(int point, SandPile *pile) {
+	int nrOfElements = pile->getNrOfElements();
+	std::vector<int> critical(nrOfElements);
+	critical = pile->defineReached(point);
+	// pile->coutLattice2d(critical);
+	int clustersize = 0;
+	double average=0;
+	for(int i=0;i<nrOfElements;i++){
+		if(critical[i] == 1){
+			clustersize++;
+			average += pile->getPoint(i);
+		}
+	}
+	return (double)average/clustersize;
+}
+
+
+const void averageSlope::averageSlopeOfReached() {
+	int nrOfClusters = 1000;
+	double variance;
+	double mean = 0;
+	double M2 = 0;
+	double delta = 0;
+	double x; // "Messwert..." 0 oder 1#
+	double sampleVariance;
+	double VarianceXbar = 0;
+
+	bool clusterfound;
+
+	std::fstream file;
+	file.open("./data/averageSlope/avSlopeOfReached.dat",std::ios::out);
+	file << "# ClusterNr | averageSlope | clustersize" << std::endl;
+
+
+
+	for(int i=0;i<nrOfClusters;i++){
+		clusterfound = false;
+		SandPile *pile = new SandPile(2,50);
+		int point;
+		while(!clusterfound){
+			point = uniformRand(0,pile->getNrOfElements());
+			if(pile->getPoint(point)==pile->getZk()) clusterfound = true;
+		}
+		x = averageSlopeOfReached(point,pile);
+		// calculating moving average + variance
+		delta = x - mean;
+		mean += (double) delta/(i+1);
+		M2 += delta*(x-mean);
+
+		sampleVariance = (double) M2/i;
+
+		VarianceXbar = sampleVariance/i; // see script chapter 2 page 12.
+		int clustersize = pile->clusterSize(point);
+		file << i << "\t" << x << "\t "<< clustersize << "\n";
+		std::cout << i << "\t" << x << "\t "<< clustersize << "\t" << (double)i/nrOfClusters *100 << "%" << std::endl;
+		free(pile);
+	}
+
+	variance = VarianceXbar;
+
+	file << "# Mean =" << mean << "\tVariance = " << variance;
+	file.close();
+	std::cout << "Average Slope of Reached is " << mean << " +/-" << sqrt(variance) << std::endl;
+}
+
+const void averageSlope::averageSlopeOfClusterReachedAndLattice() {
+	int nrOfClusters = 10000;
+	bool clusterfound;
+
+	std::fstream file;
+	file.open("./data/averageSlope/avSlopeOfClusterReachedAndLattice.dat",std::ios::out);
+	file << "# 1 PileNr | 2 averageSlopeLattice | 3 averageSlopeCluster | 4 averageSlopeReached | 5 clustersize" << std::endl;
+
+	double averageSlopeLattice, averageSlopeCluster, averageSlopeReached;
+	int clustersize;
+
+
+	for(int i=0;i<nrOfClusters;i++){
+		clusterfound = false;
+		SandPile *pile = new SandPile(2,50);
+		int point;
+		while(!clusterfound){
+			point = uniformRand(0,pile->getNrOfElements());
+			if(pile->getPoint(point)==pile->getZk()) clusterfound = true;
+		}
+
+		averageSlopeCluster = averageSlopeOfCluster(point,pile);
+		averageSlopeReached = averageSlopeOfReached(point,pile);
+		averageSlopeLattice = pile->averageSlope();
+		// calculating moving average + variance
+		clustersize = pile->clusterSize(point);
+		// "# PileNr | averageSlopeLattice | averageSlopeCluster | averageSlopeReached | clustersize" << std::endl;
+
+		file << i << "\t" << averageSlopeLattice << "\t "
+						  << averageSlopeCluster << "\t "
+						  << averageSlopeReached << "\t "
+						  << clustersize << "\n";
+		std::cout << i << "\t" << averageSlopeLattice << "\t "
+				  << averageSlopeCluster << "\t "
+				  << averageSlopeReached << "\t "
+				  << clustersize << "\t" << (double)i/nrOfClusters *100 << "%" << "\n";
+		free(pile);
+	}
+
+	file.close();
+
+}
