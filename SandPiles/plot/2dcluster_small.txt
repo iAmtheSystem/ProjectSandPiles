@@ -1,0 +1,28 @@
+load 'blues.txt'
+set dgrid3d 50,50,50
+set sample 50
+set isosample 50
+set terminal png
+set output '2dcluster_small.png'
+set ticslevel 0.1
+
+
+set contour
+unset surface
+set cntrparam levels discrete 0.99,1.1
+
+set view map
+unset clabel
+
+#set table "contours.dat"
+#splot "cluster80.dat" u 1:2:3 not
+unset table
+unset contour
+
+set cbtics (0,1,2,3)
+set xlabel 'x'
+set ylabel 'y'
+set xrange [0:25]
+set yrange [0:25]
+
+plot "Lattice2d25x25.dat" u ($1+0.5):($2+0.5):3 w image not, "clusteredge2.dat" u ($1+0.5):($2+0.5) lc 1 lw 6 w l not
