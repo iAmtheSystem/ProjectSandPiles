@@ -19,8 +19,8 @@ using namespace std;
 
 int main() {
 	// const int nrOfTimesteps = 1000;
-	int dimension = 4;
-	int sidelength = 10;
+	int dimension = 2;
+	int sidelength = 25;
 	int nrOfElements = pow(sidelength,dimension);
 
 	cout << "S A N D   P I L E S ." << endl;
@@ -28,6 +28,20 @@ int main() {
 
 	SandPile *pile2d = new SandPile(dimension,sidelength);
 
+	// **** SETUP **** //
+	stringstream name;
+	string filename;
+	pile2d->printLattice("./data/setup/Lattice2d50x50.dat");
+	pile2d->defineClusters();
+	std::vector<int> reached(nrOfElements);
+	for(int i=0;i<nrOfElements;i++){
+		name.str("");
+		name << i;
+		filename = "./data/setup/reached"+name.str()+".dat";
+		reached = pile2d->defineReached(i);
+		pile2d->fprintLattice(filename,reached);
+	}
+	// *** SETUP ENDE *** //
 
 //	stringstream name;
 //	string filename;
@@ -182,8 +196,11 @@ int main() {
 
 	cout << "Calculate Distribution" << endl;
 	Distribution* distri = new Distribution(dimension,sidelength,256);
-	distri->calculateDissipationRateDistribution()();
-	distri->fprintADissipation();
+
+	// distri->averagefftSpectrum();
+
+	// distri->calculate50Dissipations();
+	// distri->add1000Dissipations();
 
 	cout << "Programm finished!" << endl;
 	return 0;

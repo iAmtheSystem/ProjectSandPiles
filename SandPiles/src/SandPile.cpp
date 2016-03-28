@@ -18,7 +18,7 @@ SandPile::SandPile(int dimension, int sidelength):
 
 	lattice.resize(nrOfElements);
 
-	fillLatticeRand(zk,zk*2*dimension);
+	fillLatticeRand(zk,zk*2);
 
 	relax(lattice);
 
@@ -72,19 +72,17 @@ std::vector<int> SandPile::relax(std::vector<int> &lat) {
 	std::vector<int> nextTimeStepLattice (lat);
 
 	// std::cout<< "\tRelax Lattice" << std::endl;
-	int j=0;
 	bool relaxed;
 	do{ // performance optimierbar!!!
 		lat=nextTimeStepLattice;
 		relaxed = true;
-		j++;
 		for(int i=0;i<nrOfElements;i++){
 
 
 			if(lat[i]>zk){
 				relaxed = false;
 				nextTimeStepLattice[i]-= 2*dimension;
-				increaseNeighbours(i);
+				increaseNeighbours(i,nextTimeStepLattice);
 			}
 
 		}
@@ -281,17 +279,18 @@ void SandPile::setNeighbours(int point,std::vector<int> & lat,int value){
 	}
 }
 
-void SandPile::increaseNeighbours(int point){
-	int* neighbour[2*dimension];
-	neighbours(point,neighbour,lattice);
-
-	for(int i=0;i<dimension*2;i++){
-		if(!(neighbour[i]==NULL)){
-			// std::cout <<  "set neighbour to " << value << std::endl;
-			*(neighbour[i]) = *(neighbour[i]) + 1;
-		}
-	}
-}
+//void SandPile::increaseNeighbours(int point){
+//	int* neighbour[2*dimension];
+//	neighbours(point,neighbour,lattice);
+//
+//	for(int i=0;i<dimension*2;i++){
+//		if(!(neighbour[i]==NULL)){
+//			std::cout << *(neighbour[i])
+//			   <<  " set neighbour to " << (*(neighbour[i]) + 1 )<< std::endl;
+//			*(neighbour[i]) = *(neighbour[i]) + 1;
+//		}
+//	}
+//}
 
 
 
@@ -359,11 +358,12 @@ void SandPile::testCritical(int point,std::vector<int> &lat,std::vector<int> &cr
 }
 
 
-void SandPile::testDissipation(int point,std::vector<int> &lat,std::vector<int> &critical, int timesteps, int &timestepsMax, int &size, std::vector<int> dissipationRate){
+void SandPile::testDissipation(int point,std::vector<int> &lat,std::vector<int> &critical, int timesteps, int &timestepsMax, int &size, std::vector<int> &dissipationRate){
 	if(lat[point]>zk){
+		dissipationRate[timesteps]++;
+
 		timesteps ++;
 		if(timesteps>timestepsMax) timestepsMax = timesteps;
-		dissipationRate[timesteps]++;
 		lat[point]-=2*dimension;
 		increaseNeighbours(point,lat);
 		critical[point] = 1;
@@ -458,13 +458,15 @@ const void SandPile::defineClusters() {
         // coutLattice2d(copiedLattice);
 		testCritical(i,copiedLattice,critical,allCritical);
 
+		clusterEdge(critical,i);
+
 		clustersize = 0;
 		for(int j=0;j<nrOfElements;j++){
 			clustersize += critical[i];
 		}
 		name.str("");
 		name << i;
-		filename = "./data/cluster"+name.str()+".dat";
+		filename = "./data/setup/cluster"+name.str()+".dat";
 		fprintLattice(filename,critical);
 	}// End all Elements
 
@@ -563,7 +565,7 @@ void SandPile::clusterEdge(std::vector<int> critical,int startpoint) {
 
 	name.str("");
 	name << startpoint;
-	filename = "./data/clusteredge"+name.str()+".dat";
+	filename = "./data/setup/clusteredge"+name.str()+".dat";
 
 	std::fstream file;
 	file.open(filename.c_str(),std::ios::out);
@@ -613,13 +615,13 @@ void SandPile::clusterEdge(std::vector<int> critical,int startpoint) {
 
 		// std::cout << "valid? "<< p->isValid(2,0)<< std::endl;
 
-		std::cout << "X = " << p->getX() << "\tY = " << p->getY() << "\t" << "Vorne: " << vorne << "\t";
-				if(vorne == -1) std::cout << "X";
-				else std::cout << critical[vorne];
-				std::cout << "\tVornelinks: "<< vornelinks << "\t";
-				if(vornelinks == -1) std::cout << "X";
-				else std::cout << critical[vornelinks];
-				std::cout<< "\t";
+//		std::cout << "X = " << p->getX() << "\tY = " << p->getY() << "\t" << "Vorne: " << vorne << "\t";
+//				if(vorne == -1) std::cout << "X";
+//				else std::cout << critical[vorne];
+//				std::cout << "\tVornelinks: "<< vornelinks << "\t";
+//				if(vornelinks == -1) std::cout << "X";
+//				else std::cout << critical[vornelinks];
+//				std::cout<< "\t";
 
 		x = p->getX();
 		if(dir == 1 || dir == 2) x+=0.5;
@@ -635,37 +637,37 @@ void SandPile::clusterEdge(std::vector<int> critical,int startpoint) {
 		}
 		else{
 			if(startx == x && starty == y){
-				std::cout << "Finished ClusterEdge" << std::endl;
+				// std::cout << "Finished ClusterEdge" << std::endl;
 				break;
 			}
 
 		}
 
-		std::cout << x << "\t"<< y << "\tDir: " << dir;
+		// std::cout << x << "\t"<< y << "\tDir: " << dir;
 		file << x << "\t" << y << "\n";
 
 
 		if((critical[vorne] == 1 && critical[vornelinks] == 1) ) {
 			dir++;
-			std::cout << " weiter nach rechts (dir +1)";
+			// std::cout << " weiter nach rechts (dir +1)";
 
 		}
 
 		else if( critical[vornelinks] == 1 && critical[vorne] == 0){
 			point = vorne;
-			std::cout << " weiter gerade aus (dir + 0)";
+			// std::cout << " weiter gerade aus (dir + 0)";
 		}
 
 		else if(critical[vornelinks] == 0 || (vorne == -1 && vornelinks == -1)){
 			dir--;
 			point = vornelinks;
-			std::cout << " weiter nach links (dir - 1)";
+			// std::cout << " weiter nach links (dir - 1)";
 
 		}
 
-		else std::cout << "no case matched";
+		// else std::cout << "no case matched";
 
-		std::cout << std::endl;
+		// std::cout << std::endl;
 
 		// coutLattice2d(critical);
 
@@ -721,17 +723,16 @@ void SandPile::caluclateClusterdata(int point,int &time, int &size, int &distanc
 
 }
 
-void SandPile::caluclateDissipationdata(int point,std::vector<int> dissipationRate) {
+void SandPile::caluclateDissipationdata(int point,std::vector<int> &dissipationRate) {
 //int point,std::vector<int> &lat,std::vector<int> &critical, int timesteps, int &timestepsMax, int &size, std::vector<int> dissipationRate
 	std::vector<int> critical(nrOfElements);
 	std::vector<int> lat(getLattice());
-	lat[point] ++;
+	lat[point] += 1;
 	int size = 0;
-	int distance = 0;
 	int timeMax = 0;
 	testDissipation(point,lat,critical,0,timeMax, size,dissipationRate);
-	distance = 0;
-	double curDistance = 0;
+
+//	coutLattice2d(critical);
 
 //	int koord1[dimension];
 //	int koord2[dimension];

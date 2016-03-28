@@ -68,12 +68,12 @@ public:
 
 	void testCritical(int point,std::vector<int> &lat,std::vector<int> &critical);
 	void testCritical(int point,std::vector<int> &lat,std::vector<int> &critical,int timesteps, int &timestepsMax, int &size);
-	void testDissipation(int point,std::vector<int> &lat,std::vector<int> &critical, int timesteps, int &timestepsMax, int &size, std::vector<int> dissipationRate);
+	void testDissipation(int point,std::vector<int> &lat,std::vector<int> &critical, int timesteps, int &timestepsMax, int &size, std::vector<int> &dissipationRate);
 	void testCritical(int point,std::vector<int> &lat,std::vector<int> &critical,std::vector<int> &allCritical);
 
 
 	void caluclateClusterdata(int point,int &time, int &size, int &radius);
-	void caluclateDissipationdata(int point,std::vector<int> dissipationRate);
+	void caluclateDissipationdata(int point,std::vector<int> &dissipationRate);
 
 
 	void testReached(int point,std::vector<int> &lat,std::vector<int> &critical);

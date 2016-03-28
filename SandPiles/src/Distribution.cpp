@@ -19,6 +19,9 @@ Distribution::Distribution(int dimension, int sidelength, int nrOfDataPoints)
 	dataRadiusSorted = std::vector<int> (nrOfElements);
 
 	dissipationRate = std::vector<int> (nrOfElements);
+	dissipationSpectrum = std::vector<int> (nrOfElements);
+	fourierTransformedSpectrum = std::vector<int> (nrOfElements);
+	fourierTransformedSpectrumAveraged = std::vector<int> (nrOfElements);
 }
 
 Distribution::~Distribution() {
@@ -58,14 +61,73 @@ const void Distribution::calculateDissipationRateDistribution() {
 //		}
 
 	int randomCluster = pile->randomCluster();
+	for(int i=0;i<nrOfElements;i++){
+		dissipationRate[i]= 0;
+	}
+
 	pile->caluclateDissipationdata(randomCluster,dissipationRate);
 
 }
 
 
-const void Distribution::fprintData() {
-	fprintData("./data/TimeSizeRadiusDistribution.dat");
+const void Distribution::calculate50Dissipations() {
+	std::stringstream name;
+	std::string filename;
+
+	for(int i=0;i<50;i++){
+		SandPile *pile = new SandPile(dimension,sidelength);
+		// std::cout << "Calculating Distribution Nr " << i;
+		int randomCluster = pile->randomCluster();
+		// std::cout << " with random Cluster " << randomCluster;
+		// std::cout << " with Lattice[5] " << pile->getPoint(5);
+		std::cout << std::endl;
+
+		for(int j=0;j<nrOfElements;j++){
+			dissipationRate[j]= 0;
+
+		}
+
+
+
+		pile->caluclateDissipationdata(randomCluster,dissipationRate);
+		randomizeTimeDissipationRate();
+
+		name.str("");
+		name << i;
+		filename = "./data/dissipation/dissipation"+name.str()+".dat";
+		fprintData(filename,dissipationRate,nrOfElements);
+		free(pile);
+	}
 }
+
+const void Distribution::add1000Dissipations() {
+	int tousand = 1000;
+
+	for(int i=0;i<tousand;i++){
+		SandPile *pile = new SandPile(dimension,sidelength);
+		std::cout << "Calculating Distribution Nr " << i << "\t" << (double) i / tousand * 100 << "%";
+		int randomCluster = pile->randomCluster();
+		// std::cout << " with random Cluster " << randomCluster;
+		// std::cout << " with Lattice[5] " << pile->getPoint(5);
+		std::cout << std::endl;
+
+		for(int j=0;j<nrOfElements;j++){
+			dissipationRate[j]= 0;
+		}
+
+		pile->caluclateDissipationdata(randomCluster,dissipationRate);
+		randomizeTimeDissipationRate();
+
+		for(int j=0;j<nrOfElements;j++){
+			dissipationSpectrum[j] += dissipationRate[j];
+		}
+
+		fprintData("./data/dissipation/dissipationSpectrum.dat",dissipationSpectrum,nrOfElements);
+		free(pile);
+	}
+
+}
+
 
 const void Distribution::averageDistribution(int nrOfIterations,
 		int nrOfDistributions) {
@@ -73,6 +135,12 @@ const void Distribution::averageDistribution(int nrOfIterations,
 		// TODO DODODODODODO
 	}
 }
+
+const void Distribution::fprintData() {
+	fprintData("./data/TimeSizeRadiusDistribution.dat");
+}
+
+
 
 const void Distribution::fprintData(const std::string name) {
 	std::cout << "Printing file for Time/Size/Radius Distribution" << std::endl;
@@ -139,6 +207,63 @@ const void Distribution::sortForSize() {
 
 const void Distribution::fprintADissipation() {
 	fprintData("./data/ADissipation.dat",dissipationRate,nrOfElements);
+
+}
+
+const void Distribution::randomizeTimeDissipationRate() {
+	std::vector<int> puffer(dissipationRate);
+
+	int moveBy = uniformRand(0,nrOfElements);
+	int j;
+	for(int i=0;i<nrOfElements;i++){
+		j=i+moveBy;
+		if(j>=nrOfElements) j-=nrOfElements;
+		dissipationRate[i] = puffer[j];
+	}
+}
+
+const void Distribution::fftSpectrum() {
+	add1000Dissipations();
+	const int datasize = 1000;
+   //   Allocate memory for signal data
+   complex *pSignal = new complex[datasize];
+   for(int i=0;i<datasize;i++){
+	   pSignal[i] = complex(dissipationSpectrum[i]);
+   }
+//   for(int i=0;i<datasize;i++){
+//	   std::cout << (&pSignal[i])->re() << " + i* " << (&pSignal[i])->im() << std::endl;
+//   }
+   //   Apply FFT
+   CFFT::Forward(pSignal, datasize);
+   std::cout << "*** fourier transform **** " << std::endl;
+   for(int i=0;i<datasize;i++){
+	//   std::cout << (&pSignal[i])->re() << " + i* " << (&pSignal[i])->re() << std::endl;
+	   fourierTransformedSpectrum[i] = (&pSignal[i])->norm();
+   }
+   //   Free memory
+   fprintData("./data/dissipation/transformedSpectrum.dat",fourierTransformedSpectrum,datasize);
+   delete[] pSignal;
+}
+
+const void Distribution::averagefftSpectrum() {
+	int averageSamples = 10;
+	for(int i=0;i<nrOfElements;i++){
+		fourierTransformedSpectrumAveraged[i] = 0;
+	}
+
+	for(int i = 0;i<averageSamples;i++){
+		std::cout << "Calculating FFT Spectrum Nr " << i << (double) i/averageSamples * 100 << "%" << std::endl;
+		fftSpectrum();
+		for(int j=0;j<nrOfElements;j++){
+			fourierTransformedSpectrumAveraged[j] += fourierTransformedSpectrum[j];
+
+		}
+	}
+	for(int i = 0;i<averageSamples;i++){
+		fourierTransformedSpectrumAveraged[i]/= (double) averageSamples;
+	}
+	fprintData("./data/dissipation/averagedFFTOfSpectrum.dat",fourierTransformedSpectrumAveraged,nrOfElements);
+
 }
 
 const void Distribution::sortForRadius() {

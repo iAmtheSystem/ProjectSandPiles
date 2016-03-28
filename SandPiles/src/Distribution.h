@@ -11,8 +11,13 @@
 #include <vector>
 #include <fstream>
 #include <string>
+
+#include "fft.h"
+
 #include "SandPile.h"
 #include "simpleMath.h"
+
+
 
 // the Size Distribution is meant
 class Distribution {
@@ -30,6 +35,10 @@ private:
 	std::vector<int> dataRadiusSorted;
 
 	std::vector<int> dissipationRate;
+	std::vector<int> dissipationSpectrum;
+
+	std::vector<int> fourierTransformedSpectrum;
+	std::vector<int> fourierTransformedSpectrumAveraged;
 
 public:
 	Distribution(int dimension, int sidelength,int nrOfDataPoints);
@@ -39,8 +48,14 @@ public:
 	const void averageDistribution(int nrOfIterations, int nrOfDistributions);
 
 	const void calculateDissipationRateDistribution();
+	const void calculate50Dissipations();
+	const void add1000Dissipations();
+	const void add1000Dissipations(int tousand,bool silent);
+	const void fftSpectrum();
+	const void averagefftSpectrum();
 
 
+	const void randomizeTimeDissipationRate();
 
 	const void fprintData();
 	const void fprintData(const std::string name);
@@ -54,6 +69,21 @@ public:
 	const void sortForSize();
 	const void sortForRadius();
 
+	const std::vector<int>& getDataRadius() const {
+		return dataRadius;
+	}
+
+	const std::vector<int>& getDataRadiusSorted() const {
+		return dataRadiusSorted;
+	}
+
+	const std::vector<int>& getDataTimeSorted() const {
+		return dataTimeSorted;
+	}
+
+	const std::vector<int>& getDissipationRate() const {
+		return dissipationRate;
+	}
 };
 
 #endif /* DISTRIBUTION_H_ */
