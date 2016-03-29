@@ -20,23 +20,35 @@ set yrange [-0.5:11.5]
 set key below
 set terminal x11
 
-do for [i=0:143]{
-plot '../data/setup/Lattice.dat' u 1:2:3 w image not, '../data/setup/clusteredges'.i.'.dat' u 1:2 lc 2 lw 6 w l not , '../data/setup/clustercoords'.i.'.dat' lw 10 lc 1 title 'critical site'
-pause 0.25
-}
+file = '../data/setup/Lattice.dat'
+
+#do for [i=0:143]{
+#plot '../data/setup/Lattice.dat' u 1:2:3 w image not, '../data/setup/clusteredges'.i.'.dat' u 1:2 lc 2 lw 6 w l not , '../data/setup/#clustercoords'.i.'.dat' lw 10 lc 1 title 'critical site'
+#pause 0.25
+#}
 
 
 set terminal gif animate delay 25
 set output 'real.gif'
 
-do for [i=0:143]{
-plot '../data/setup/Lattice.dat' u 1:2:3 w image not,'../data/setup/clustercoords'.i.'.dat' lw 10 lc 1 title 'critical site', '../data/setup/clusteredges'.i.'.dat' u 1:2 lc 2 lw 6 w l title 'cluster' 
-#pause 0.25
-}
+#do for [i=0:143]{
+#plot file u 1:2:3 w image not,'../data/setup/clustercoords'.i.'.dat' lw 10 lc 1 title 'critical #site', '../data/setup/clusteredges'.i.'.dat' u 1:2 lc 2 lw 6 w l title 'cluster' 
+##pause 0.25
+#}
 
 
+set terminal png
+set output "justLattice.png"
+plot file u 1:2:3 w image not
 
+unset key
 
+set output "latticeWithCluster.png"
+plot file u 1:2:3 w image not,'../data/setup/clustercoords29.dat' lw 10 lc 1 title 'critical site', '../data/setup/clusteredges29.dat' u 1:2 lc 2 lw 6 w l title 'cluster' 
 
+set output "latticeWithCluster2.png"
+plot file u 1:2:3 w image not,'../data/setup/clustercoords63.dat' lw 10 lc 1 title 'critical site', '../data/setup/clusteredges63.dat' u 1:2 lc 2 lw 6 w l title 'cluster' 
 
+set terminal x11
+replot
 

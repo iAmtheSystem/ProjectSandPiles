@@ -72,7 +72,7 @@ extern double meanAndVarianceOnline(double data[], int datalength,
 	double sampleVariance;
 
 
-	std::cout << "calulating mean for "<< datalength << " data" << std::endl;
+//	std::cout << "calulating mean for "<< datalength << " data" << std::endl;
 	for(int i=0;i<datalength;i++){
 		x = data[i];
 		// calculating moving average + variance
@@ -80,15 +80,15 @@ extern double meanAndVarianceOnline(double data[], int datalength,
 		mean += (double) delta/(i+1);
 		M2 += delta*(x-mean);
 		sampleVariance = (double) M2/datalength;
-		std::cout << "\t\t mean = " << mean << " Delta = " << delta << " M2 = " << M2 << std::endl;
-
-		std::cout << "\t\t X = " << x << " Var = " << sampleVariance << std::endl;
+//		std::cout << "\t\t mean = " << mean << " Delta = " << delta << " M2 = " << M2 << std::endl;
+//
+//		std::cout << "\t\t X = " << x << " Var = " << sampleVariance << std::endl;
 
 	}
 
 
 	// see script chapter 2 page 12.
-	var = sampleVariance/datalength;
+	var = (double) sampleVariance/datalength;
 	return mean;
 
 }

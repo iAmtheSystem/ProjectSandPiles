@@ -200,7 +200,7 @@ int main() {
 
 
 	cout << "Calculate Distribution" << endl;
-	Distribution* distri = new Distribution(dimension,sidelength,256);
+	Distribution* distri = new Distribution(dimension,sidelength,128);
 
 	distri->averagefftSpectrum();
 
