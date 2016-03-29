@@ -1,0 +1,40 @@
+# Edge of the Cluster
+0.5	1.5	 weiter nach links (dir - 1)	 nach -> dir: 1	3000
+1.5	1.5	 weiter gerade aus (dir + 0)	 nach -> dir: 1	2999
+2.5	1.5	 weiter gerade aus (dir + 0)	 nach -> dir: 1	2998
+3.5	1.5	 weiter nach rechts (dir +1)	 nach runter dir: 2	2997
+3.5	2.5	 weiter nach rechts (dir +1)	 nach <- dir: 3	2996
+2.5	2.5	 weiter nach links (dir - 1)	 nach runter dir: 2	2995
+2.5	3.5	 weiter gerade aus (dir + 0)	 nach runter dir: 2	2994
+2.5	4.5	 weiter gerade aus (dir + 0)	 nach runter dir: 2	2993
+2.5	5.5	 weiter gerade aus (dir + 0)	 nach runter dir: 2	2992
+2.5	6.5	 weiter gerade aus (dir + 0)	 nach runter dir: 2	2991
+2.5	7.5	 weiter nach links (dir - 1)	 nach -> dir: 1	2990
+3.5	7.5	 weiter gerade aus (dir + 0)	 nach -> dir: 1	2989
+4.5	7.5	 weiter nach links (dir - 1)	 nach hoch dir: 0	2988
+4.5	6.5	 weiter gerade aus (dir + 0)	 nach oben dir: 4	2987
+4.5	5.5	 weiter nach rechts (dir +1)	 nach rechts dir: 5	2986
+5.5	5.5	 weiter nach links (dir - 1)	 nach hoch dir: 0	2985
+5.5	4.5	 weiter nach rechts (dir +1)	 nach rechts dir: 5	2984
+6.5	4.5	 weiter gerade aus (dir + 0)	 nach -> dir: 1	2983
+7.5	4.5	 weiter nach rechts (dir +1)	 nach runter dir: 2	2982
+7.5	5.5	 weiter gerade aus (dir + 0)	 nach runter dir: 2	2981
+7.5	6.5	 weiter nach links (dir - 1)	 nach -> dir: 1	2980
+8.5	6.5	 weiter nach links (dir - 1)	 nach hoch dir: 0	2979
+8.5	5.5	 weiter gerade aus (dir + 0)	 nach oben dir: 4	2978
+8.5	4.5	 weiter gerade aus (dir + 0)	 nach oben dir: 4	2977
+8.5	3.5	 weiter nach rechts (dir +1)	 nach rechts dir: 5	2976
+9.5	3.5	 weiter nach links (dir - 1)	 nach hoch dir: 0	2975
+9.5	2.5	 weiter nach links (dir - 1)	 nach <- dir: 3	2974
+8.5	2.5	 weiter gerade aus (dir + 0)	 nach <- dir: 3	2973
+7.5	2.5	 weiter nach rechts (dir +1)	 nach oben dir: 4	2972
+7.5	1.5	 weiter nach links (dir - 1)	 nach <- dir: 3	2971
+6.5	1.5	 weiter gerade aus (dir + 0)	 nach <- dir: 3	2970
+5.5	1.5	 weiter gerade aus (dir + 0)	 nach <- dir: 3	2969
+4.5	1.5	 weiter nach rechts (dir +1)	 nach oben dir: 4	2968
+4.5	0.5	 weiter nach links (dir - 1)	 nach <- dir: 3	2967
+3.5	0.5	 weiter gerade aus (dir + 0)	 nach <- dir: 3	2966
+2.5	0.5	 weiter gerade aus (dir + 0)	 nach <- dir: 3	2965
+1.5	0.5	 weiter gerade aus (dir + 0)	 nach <- dir: 3	2964
+0.5	0.5	 weiter nach links (dir - 1)	 nach runter dir: 2	2963
+0.5	1.5

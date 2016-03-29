@@ -1,0 +1,8 @@
+# Edge of the Cluster
+5.5	7.5	 weiter nach links (dir - 1)	 nach -> dir: 1	3000
+6.5	7.5	 weiter gerade aus (dir + 0)	 nach -> dir: 1	2999
+7.5	7.5	 weiter nach links (dir - 1)	 nach hoch dir: 0	2998
+7.5	6.5	 weiter nach links (dir - 1)	 nach <- dir: 3	2997
+6.5	6.5	 weiter gerade aus (dir + 0)	 nach <- dir: 3	2996
+5.5	6.5	 weiter nach links (dir - 1)	 nach runter dir: 2	2995
+5.5	7.5
