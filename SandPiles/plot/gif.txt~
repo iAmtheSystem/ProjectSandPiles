@@ -1,0 +1,42 @@
+load 'blues.txt'
+set dgrid3d 50,50,50
+set sample 50
+set isosample 50
+
+set ticslevel 0.1
+
+
+unset surface
+set cntrparam levels discrete 0.99,1.1
+
+set view map
+unset clabel
+#plot "contours.dat" u 1:2:3 lc 2 w l lw 6  not
+
+set xrange [-0.5:11.5]
+set yrange [-0.5:11.5]
+#set zrange [0:5]
+
+set key below
+set terminal x11
+
+do for [i=0:143]{
+plot '../data/setup/Lattice.dat' u 1:2:3 w image not, '../data/setup/clusteredges'.i.'.dat' u 1:2 lc 2 lw 6 w l not , '../data/setup/clustercoords'.i.'.dat' lw 10 lc 1 title 'critical site'
+pause 0.25
+}
+
+
+set terminal gif animate delay 25
+set output 'real.gif'
+
+do for [i=0:143]{
+plot '../data/setup/Lattice.dat' u 1:2:3 w image not,'../data/setup/clustercoords'.i.'.dat' lw 10 lc 1 title 'critical site', '../data/setup/clusteredges'.i.'.dat' u 1:2 lc 2 lw 6 w l title 'cluster' 
+#pause 0.25
+}
+
+
+
+
+
+
+
