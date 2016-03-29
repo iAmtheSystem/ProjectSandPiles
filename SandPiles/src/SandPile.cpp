@@ -308,6 +308,7 @@ void SandPile::increaseNeighbours(int point,std::vector<int> & lat){
 
 
 void SandPile::testCritical(int point,std::vector<int> &lat,std::vector<int> &critical,std::vector<int> &allCritical){
+
 	if(lat[point]>zk){
 
 		lat[point]-=2*dimension;
@@ -317,9 +318,9 @@ void SandPile::testCritical(int point,std::vector<int> &lat,std::vector<int> &cr
 		//coutLattice2d(lat);
 
 		critical[point] = 1;
-		setNeighbours(point,critical,1);
+		// setNeighbours(point,critical,1);
 		allCritical[point] = 1;
-		setNeighbours(point,allCritical,1);
+		// setNeighbours(point,allCritical,1);
 
 		int neighbourNr[2*dimension];
 		neighboursNumbers(point,neighbourNr);
@@ -455,10 +456,23 @@ const void SandPile::defineClusters() {
 		std::vector<int> critical(nrOfElements);
 		copiedLattice = lattice;
 		copiedLattice[i]++;
-        // coutLattice2d(copiedLattice);
 		testCritical(i,copiedLattice,critical,allCritical);
+		int firstCritical=0;
+		std::cout << "DEBUG 1";
+		while(firstCritical<nrOfElements){
+			if(critical[firstCritical]==1) break;
+			firstCritical++;
+		}
+		std::cout << "DEBUG 2" << std::endl;
 
-		clusterEdge(critical,i);
+		if(firstCritical<nrOfElements) {
+
+			coutLattice2d(critical);
+			std::cout << std::endl;
+	        coutLattice2d(lattice);
+		}
+		std::cout << "\nFirst Critical: (CLUSTER) "<< i << " firstCrit = " << firstCritical << " nrOfElements " << nrOfElements << "\n";
+		clusterEdge(critical,firstCritical,i);
 
 		clustersize = 0;
 		for(int j=0;j<nrOfElements;j++){
@@ -551,6 +565,10 @@ const int SandPile::clusterSize(int point) {
 }
 
 void SandPile::clusterEdge(std::vector<int> critical,int startpoint) {
+	clusterEdge(critical,startpoint,startpoint);
+}
+
+void SandPile::clusterEdge(std::vector<int> critical,int startpoint,int clusterpoint) {
 	// selecting first point
 //	int startpoint = -1;
 //	for(int i=0;i<nrOfElements;i++){
@@ -562,16 +580,33 @@ void SandPile::clusterEdge(std::vector<int> critical,int startpoint) {
 
 	std::stringstream name;
 	std::string filename;
+	std::string filename2;
 
 	name.str("");
-	name << startpoint;
-	filename = "./data/setup/clusteredge"+name.str()+".dat";
+	name << clusterpoint;
+	filename = "./data/setup/clusteredges"+name.str()+".dat";
+	filename2 = "./data/setup/clustercoords"+name.str()+".dat";
+
 
 	std::fstream file;
 	file.open(filename.c_str(),std::ios::out);
+	std::fstream file2;
+	file2.open(filename2.c_str(),std::ios::out);
+
+	pointTwoD* p = new pointTwoD(clusterpoint,sidelength);
+
+	file2 << p->getX() << "\t" << p->getY();
+	file2.close();
+
 	file << "# Edge of the Cluster\n";
 
-	int point=startpoint;
+	if(startpoint==nrOfElements){
+		std::cout << " EmptyFile ";
+		file.close();
+		return;
+	}
+
+	int point=startpoint-1;
 	int vorne = 1;
 	int vornelinks = -1;
 	int dir = 2;
@@ -581,11 +616,33 @@ void SandPile::clusterEdge(std::vector<int> critical,int startpoint) {
 	double starty=0;
 	bool ersteRunde = true;
 	// bool letzteRunde = false;
-	int i = 300;
+	int i = 3000;
 	do{
 		pointTwoD* p = new pointTwoD(point,sidelength);
 		if(dir==5) dir=1;
 		if(dir==0) dir=4;
+
+		x = p->getX();
+		if(dir == 1 || dir == 2) x+=0.5;
+		else if(dir == 3 || dir == 4) x-=0.5;
+		y = p->getY();
+		if(dir == 1 || dir == 4) y-=0.5;
+		else if(dir == 2 || dir == 3) y+=0.5;
+
+		if(ersteRunde){
+			startx = x;
+			starty = y;
+			ersteRunde = false;
+		}
+		else{
+			if(startx == x && starty == y){
+				// std::cout << "Finished ClusterEdge" << std::endl;
+				break;
+			}
+
+		}
+
+
 		switch (dir){
 			case 1:
 				if(p->isValid(p->getX()+1,p->getY())) vorne = point +1;
@@ -623,47 +680,52 @@ void SandPile::clusterEdge(std::vector<int> critical,int startpoint) {
 //				else std::cout << critical[vornelinks];
 //				std::cout<< "\t";
 
-		x = p->getX();
-		if(dir == 1 || dir == 2) x+=0.5;
-		else if(dir == 3 || dir == 4) x-=0.5;
-		y = p->getY();
-		if(dir == 1 || dir == 4) y-=0.5;
-		else if(dir == 2 || dir == 3) y+=0.5;
 
-		if(ersteRunde){
-			startx = x;
-			starty = y;
-			ersteRunde = false;
-		}
-		else{
-			if(startx == x && starty == y){
-				// std::cout << "Finished ClusterEdge" << std::endl;
-				break;
-			}
 
-		}
 
 		// std::cout << x << "\t"<< y << "\tDir: " << dir;
-		file << x << "\t" << y << "\n";
+		file << x << "\t" << y << "\t";
 
 
 		if((critical[vorne] == 1 && critical[vornelinks] == 1) ) {
 			dir++;
-			// std::cout << " weiter nach rechts (dir +1)";
+			file << " weiter nach rechts (dir +1)";
 
 		}
 
 		else if( critical[vornelinks] == 1 && critical[vorne] == 0){
 			point = vorne;
-			// std::cout << " weiter gerade aus (dir + 0)";
+			file << " weiter gerade aus (dir + 0)";
 		}
 
 		else if(critical[vornelinks] == 0 || (vorne == -1 && vornelinks == -1)){
 			dir--;
 			point = vornelinks;
-			// std::cout << " weiter nach links (dir - 1)";
+			file << " weiter nach links (dir - 1)";
 
 		}
+
+		switch(dir){
+			case 0:
+				file <<"\t nach hoch";
+				break;
+			case 1:
+				file <<"\t nach ->";
+				break;
+			case 2:
+				file <<"\t nach runter";
+				break;
+			case 3:
+				file <<"\t nach <-";
+				break;
+			case 4:
+				file <<"\t nach oben";
+				break;
+			case 5:
+				file <<"\t nach rechts";
+				break;
+		}
+		file << " dir: " << dir << "\t" << i << std::endl;
 
 		// else std::cout << "no case matched";
 
@@ -673,7 +735,10 @@ void SandPile::clusterEdge(std::vector<int> critical,int startpoint) {
 
 		free(p);
 		i--;
-		if(i==0) std::cout <<"Schritte abgelaufen" << std::endl;
+		if(i==0) {
+			std::cout <<"Schritte abgelaufen" << std::endl;
+			file << "# Schritte abgelaufen" << std::endl;
+		}
 	}while(i);
 
 	file << x << "\t" << y << "\n";

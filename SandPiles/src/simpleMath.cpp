@@ -62,6 +62,37 @@ extern void coord(int dim, int sidelength, int point, int koord[]) {
 	}
 }
 
+extern double meanAndVarianceOnline(double data[], int datalength,
+		double& var) {
+
+	double mean = 0;
+	double M2 = 0;
+	double delta = 0;
+	double x; // "Messwert..." 0 oder 1#
+	double sampleVariance;
+
+
+	std::cout << "calulating mean for "<< datalength << " data" << std::endl;
+	for(int i=0;i<datalength;i++){
+		x = data[i];
+		// calculating moving average + variance
+		delta = x - mean;
+		mean += (double) delta/(i+1);
+		M2 += delta*(x-mean);
+		sampleVariance = (double) M2/datalength;
+		std::cout << "\t\t mean = " << mean << " Delta = " << delta << " M2 = " << M2 << std::endl;
+
+		std::cout << "\t\t X = " << x << " Var = " << sampleVariance << std::endl;
+
+	}
+
+
+	// see script chapter 2 page 12.
+	var = sampleVariance/datalength;
+	return mean;
+
+}
+
 extern double radius(int dim, int koord1[], int koord2[]) {
 	int sum = 0;
 	for(int i=0;i<dim;i++){

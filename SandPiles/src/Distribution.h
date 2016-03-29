@@ -37,8 +37,8 @@ private:
 	std::vector<int> dissipationRate;
 	std::vector<int> dissipationSpectrum;
 
-	std::vector<int> fourierTransformedSpectrum;
-	std::vector<int> fourierTransformedSpectrumAveraged;
+	std::vector<double> fourierTransformedSpectrum;
+	std::vector<double> fourierTransformedSpectrumAveraged;
 
 public:
 	Distribution(int dimension, int sidelength,int nrOfDataPoints);
@@ -60,6 +60,9 @@ public:
 	const void fprintData();
 	const void fprintData(const std::string name);
 	const void fprintData(const std::string name,std::vector<int> data, int nrOfPoints);
+	const void fprintData(const std::string name,std::vector<double> data, int nrOfPoints);
+	const void fprintData(const std::string name,std::vector<double> data, double data2[], int nrOfPoints);
+
 
 	const void fprintADissipation();
 

@@ -84,6 +84,7 @@ public:
 	std::vector<int> defineReached(int point);
 	const int clusterSize(int point);
 	void clusterEdge(std::vector<int> critical,int startpoint);
+	void clusterEdge(std::vector<int> critical,int startpoint,int clusterpoint);
 	bool OutOfRange2d(int point);
 
 	std::vector<int> SideZeros();

@@ -17,6 +17,8 @@ extern bool seeded;
 
 extern double uniformRand(double from, double to);
 
+extern double meanAndVarianceOnline(double data[], int datalength, double &var);
+
 extern double arithmeticMedianByVariance(int array_length,double x[], double variances[], double & var);
 
 extern void coord(int dim, int sidelength,int point, int koord[]);

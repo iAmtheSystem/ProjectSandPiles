@@ -20,8 +20,8 @@ Distribution::Distribution(int dimension, int sidelength, int nrOfDataPoints)
 
 	dissipationRate = std::vector<int> (nrOfElements);
 	dissipationSpectrum = std::vector<int> (nrOfElements);
-	fourierTransformedSpectrum = std::vector<int> (nrOfElements);
-	fourierTransformedSpectrumAveraged = std::vector<int> (nrOfElements);
+	fourierTransformedSpectrum = std::vector<double> (nrOfElements);
+	fourierTransformedSpectrumAveraged = std::vector<double> (nrOfElements);
 }
 
 Distribution::~Distribution() {
@@ -101,15 +101,16 @@ const void Distribution::calculate50Dissipations() {
 }
 
 const void Distribution::add1000Dissipations() {
-	int tousand = 1000;
+	int tousand = 10000;
+	std::cout << "\t Add 1000 Datapoints" << std::endl;
 
 	for(int i=0;i<tousand;i++){
 		SandPile *pile = new SandPile(dimension,sidelength);
-		std::cout << "Calculating Distribution Nr " << i << "\t" << (double) i / tousand * 100 << "%";
+		/// std::cout << "Calculating Distribution Nr " << i << "\t" << (double) i / tousand * 100 << "%";
 		int randomCluster = pile->randomCluster();
 		// std::cout << " with random Cluster " << randomCluster;
 		// std::cout << " with Lattice[5] " << pile->getPoint(5);
-		std::cout << std::endl;
+		// std::cout << std::endl;
 
 		for(int j=0;j<nrOfElements;j++){
 			dissipationRate[j]= 0;
@@ -186,6 +187,46 @@ const void Distribution::fprintData(const std::string name,
 
 }
 
+const void Distribution::fprintData(const std::string name,
+		std::vector<double> data, int nrOfPoints) {
+
+	std::fstream file;
+
+	file.open(name.c_str(),std::ios::out);
+
+
+	file << "# dimension = " << dimension << " sidelength = " << sidelength << std::endl;
+	file << "# x | y | var" << std::endl;
+	for(int i=0;i<nrOfElements;i++){
+		file  << i << "\t" << data[i] <<  std::endl;
+	}
+
+	file.close();
+
+}
+
+
+
+
+const void Distribution::fprintData(const std::string name,
+		std::vector<double> data, double data2[], int nrOfPoints) {
+
+	std::fstream file;
+
+	file.open(name.c_str(),std::ios::out);
+
+
+	file << "# dimension = " << dimension << " sidelength = " << sidelength << std::endl;
+	file << "# x | y | var" << std::endl;
+	for(int i=0;i<nrOfElements;i++){
+		file  << i << "\t" << data[i] << "\t" << sqrt(data2[i]) << std::endl;
+	}
+
+	file.close();
+
+}
+
+
 
 const void Distribution::sortForAll(){
 	sortForTime();
@@ -224,45 +265,63 @@ const void Distribution::randomizeTimeDissipationRate() {
 
 const void Distribution::fftSpectrum() {
 	add1000Dissipations();
-	const int datasize = 1000;
+	const int datasize = 1024;
    //   Allocate memory for signal data
    complex *pSignal = new complex[datasize];
    for(int i=0;i<datasize;i++){
-	   pSignal[i] = complex(dissipationSpectrum[i]);
+	   pSignal[i] = complex( (double) dissipationSpectrum[i]);
    }
 //   for(int i=0;i<datasize;i++){
 //	   std::cout << (&pSignal[i])->re() << " + i* " << (&pSignal[i])->im() << std::endl;
 //   }
    //   Apply FFT
    CFFT::Forward(pSignal, datasize);
-   std::cout << "*** fourier transform **** " << std::endl;
+   // std::cout << "*** fourier transform **** " << std::endl;
    for(int i=0;i<datasize;i++){
-	//   std::cout << (&pSignal[i])->re() << " + i* " << (&pSignal[i])->re() << std::endl;
+	   // std::cout << (&pSignal[i])->re() << " + i* " << (&pSignal[i])->im() << std::endl;
 	   fourierTransformedSpectrum[i] = (&pSignal[i])->norm();
    }
    //   Free memory
-   fprintData("./data/dissipation/transformedSpectrum.dat",fourierTransformedSpectrum,datasize);
+   // fprintData("./data/dissipation/transformedSpectrum.dat",fourierTransformedSpectrum,datasize);
    delete[] pSignal;
 }
 
 const void Distribution::averagefftSpectrum() {
-	int averageSamples = 10;
+	const int averageSamples = 100;
+
+	double buffer[nrOfElements][averageSamples];
+	double var[nrOfElements];
+
 	for(int i=0;i<nrOfElements;i++){
 		fourierTransformedSpectrumAveraged[i] = 0;
 	}
-
+	std::cout << "calculate FFTSpectra" << std::endl;
+	std::stringstream name;
+	std::string filename;
 	for(int i = 0;i<averageSamples;i++){
-		std::cout << "Calculating FFT Spectrum Nr " << i << (double) i/averageSamples * 100 << "%" << std::endl;
+		std::cout << "Calculating FFT Spectrum Nr " << i << " "<< (double) i/averageSamples * 100 << "%" << std::endl;
 		fftSpectrum();
+		name.str("");
+		name << i;
+		filename = "./data/dissipation/transformedspectrum"+name.str()+".dat";
+
+		fprintData(filename,fourierTransformedSpectrum,1024);
+
 		for(int j=0;j<nrOfElements;j++){
-			fourierTransformedSpectrumAveraged[j] += fourierTransformedSpectrum[j];
+			buffer[j][i] = fourierTransformedSpectrum[j];
 
 		}
 	}
-	for(int i = 0;i<averageSamples;i++){
-		fourierTransformedSpectrumAveraged[i]/= (double) averageSamples;
+	std::cout << "Average Samples" << std::endl;
+	for(int i = 0;i<nrOfElements;i++){
+		std::cout << i << "\tDebug 1" << std::endl;
+		// std::cout << "\tBuffer[i][0] = " << buffer[i][0] << std::endl;
+		fourierTransformedSpectrumAveraged[i] = meanAndVarianceOnline(buffer[i],averageSamples,(var[i]));
+		std::cout << "\tDebug 2" << std::endl;
 	}
-	fprintData("./data/dissipation/averagedFFTOfSpectrum.dat",fourierTransformedSpectrumAveraged,nrOfElements);
+
+
+	fprintData("./data/dissipation/averagedFFTOfSpectrum.dat",fourierTransformedSpectrumAveraged,var,nrOfElements);
 
 }
 
